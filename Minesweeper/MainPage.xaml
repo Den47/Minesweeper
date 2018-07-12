@@ -1,10 +1,39 @@
 ﻿<Page x:Class="Minesweeper.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:classes="using:Minesweeper.Classes"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="using:Minesweeper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
 
-	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+	<Page.Resources>
+		<DataTemplate x:Key="CellButtonTemplate" x:DataType="classes:Cell">
+			<Grid>
+				<TextBlock HorizontalAlignment="Center"
+				           VerticalAlignment="Center"
+				           FontSize="12"
+				           Text="{Binding}" />
+			</Grid>
+		</DataTemplate>
+
+		<Style x:Name="CellButtonStyle" TargetType="ToggleButton">
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Stretch" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="Height" Value="24" />
+			<Setter Property="Width" Value="24" />
+			<Setter Property="ContentTemplate" Value="{StaticResource CellButtonTemplate}" />
+		</Style>
+	</Page.Resources>
+
+	<Grid Padding="20" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Grid x:Name="field"
+		      Padding="2"
+		      HorizontalAlignment="Center"
+		      VerticalAlignment="Center"
+		      Background="LightGray" />
+	</Grid>
 </Page>
