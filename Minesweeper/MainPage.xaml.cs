@@ -63,6 +63,8 @@ namespace Minesweeper
 					Grid.SetColumn(button, j);
 
 					field.Children.Add(button);
+
+					cell.Button = button;
 				}
 			}
 
@@ -125,6 +127,8 @@ namespace Minesweeper
 
 			foreach (var cells in _cellsList)
 				cells.IsChecked = false;
+
+			cell.IsOpen = true;
 
 			if (cell.Count == 0)
 				Open(cell.Cells);
