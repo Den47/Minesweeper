@@ -1,8 +1,10 @@
 ﻿using Minesweeper.Classes;
 using System;
 using System.Collections.Generic;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Minesweeper
 {
@@ -24,6 +26,8 @@ namespace Minesweeper
 			GenerateField();
 			GenerateCells();
 			GenerateMines();
+
+			SetCellBackgrounds();
 		}
 
 		private void GenerateField()
@@ -116,6 +120,25 @@ namespace Minesweeper
 					_cells[i, j].IsMined = true;
 					count++;
 				}
+			}
+		}
+
+		private void SetCellBackgrounds()
+		{
+			foreach (var item in _cellsList)
+			{
+				switch (item.Count)
+				{
+					case 0:
+						item.Background = new SolidColorBrush(Colors.WhiteSmoke);
+						break;
+					default:
+						item.Background = new SolidColorBrush(Colors.PaleGreen);
+						break;
+				}
+
+				if (item.IsMined)
+					item.Background = new SolidColorBrush(Colors.PaleVioletRed);
 			}
 		}
 

@@ -11,11 +11,11 @@
 		<converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="classes:Cell">
-			<Grid>
+			<Grid Background="{Binding Background}">
 				<TextBlock HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
 				           FontSize="12"
-				           Text="{Binding}" />
+				           Text="{Binding Content}" />
 				<Border Background="LightGray" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
 			</Grid>
 		</DataTemplate>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Minesweeper.Classes
 {
@@ -37,12 +38,26 @@ namespace Minesweeper.Classes
 			}
 		}
 
+		public string Content
+		{
+			get
+			{
+				if (IsMined)
+					return "Ж";
+
+				var count = Count;
+				return count == 0 ? string.Empty : count.ToString();
+			}
+		}
+
+		public Brush Background { get; set; }
+
 		public List<Cell> Cells { get; }
 
 		public int Count => IsMined ? int.MaxValue : (Cells?.Count(x => x.IsMined) ?? 0);
 
 		public Button Button { get; set; }
 
-		public override string ToString() => IsMined ? "*" : Count.ToString();
+		public override string ToString() => Content;
 	}
 }
