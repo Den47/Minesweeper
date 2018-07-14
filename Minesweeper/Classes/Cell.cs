@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using Minesweeper.Support;
+using System.Collections.Generic;
 using System.Linq;
-using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Controls;
 
 namespace Minesweeper.Classes
 {
-	public class Cell
+	internal class Cell : PropertyChangedBase
 	{
 		private bool _isOpen;
 
-		public Cell(int column, int row)
+		public Cell(int row, int column)
 		{
-			Column = column;
 			Row = row;
+			Column = column;
 			Cells = new List<Cell>();
 		}
 
@@ -21,6 +22,8 @@ namespace Minesweeper.Classes
 
 		public bool IsMined { get; set; }
 
+		public bool IsChecked { get; set; }
+
 		public bool IsOpen
 		{
 			get => _isOpen;
@@ -29,19 +32,16 @@ namespace Minesweeper.Classes
 				if (_isOpen != value)
 				{
 					_isOpen = value;
-					if (value && Button != null)
-						Button.IsChecked = true;
+					NotifyOfPropertyChange(nameof(IsOpen));
 				}
 			}
 		}
-
-		public bool IsChecked { get; set; }
 
 		public List<Cell> Cells { get; }
 
 		public int Count => IsMined ? int.MaxValue : (Cells?.Count(x => x.IsMined) ?? 0);
 
-		public ToggleButton Button { get; set; }
+		public Button Button { get; set; }
 
 		public override string ToString() => IsMined ? "*" : Count.ToString();
 	}

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 
 namespace Minesweeper
 {
@@ -21,6 +20,7 @@ namespace Minesweeper
 		public MainPage()
 		{
 			this.InitializeComponent();
+
 			GenerateField();
 			GenerateCells();
 			GenerateMines();
@@ -51,10 +51,10 @@ namespace Minesweeper
 					_cells[i, j] = cell;
 					_cellsList.Add(cell);
 
-					var button = new ToggleButton
+					var button = new Button
 					{
-						Style = CellButtonStyle,
-						DataContext = cell
+						DataContext = cell,
+						Style = CellButtonStyle
 					};
 
 					button.Click += CellButton_Click;
