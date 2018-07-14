@@ -1,6 +1,7 @@
 ﻿using Minesweeper.Classes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -156,10 +157,20 @@ namespace Minesweeper
 			foreach (var cells in _cellsList)
 				cells.IsChecked = false;
 
-			cell.IsOpen = true;
+			if (cell.IsOpen)
+			{
+				var notMarkedCells = cell.Cells.Where(x => !x.IsMarked);
+				if (notMarkedCells.Count() == cell.Cells.Count - cell.Count)
+					Open(notMarkedCells);
+			}
+			else
+			{
+				cell.IsOpen = true;
+				cell.IsChecked = true;
 
-			if (cell.Count == 0)
-				Open(cell.Cells);
+				if (cell.Count == 0)
+					Open(cell.Cells);
+			}
 		}
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
