@@ -17,6 +17,12 @@
 				           FontSize="12"
 				           Text="{Binding Content}" />
 				<Border Background="LightGray" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
+				<FontIcon HorizontalAlignment="Center"
+				          VerticalAlignment="Center"
+				          FontFamily="Segoe UI Symbol"
+				          FontSize="12"
+				          Glyph="&#xE129;"
+				          Visibility="{Binding IsMarkVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 			</Grid>
 		</DataTemplate>
 

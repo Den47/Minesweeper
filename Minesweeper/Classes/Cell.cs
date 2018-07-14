@@ -9,6 +9,7 @@ namespace Minesweeper.Classes
 	internal class Cell : PropertyChangedBase
 	{
 		private bool _isOpen;
+		private bool _isMarked;
 
 		public Cell(int row, int column)
 		{
@@ -34,6 +35,21 @@ namespace Minesweeper.Classes
 				{
 					_isOpen = value;
 					NotifyOfPropertyChange(nameof(IsOpen));
+					NotifyOfPropertyChange(nameof(IsMarkVisible));
+				}
+			}
+		}
+
+		public bool IsMarked
+		{
+			get => _isMarked;
+			set
+			{
+				if (_isMarked != value)
+				{
+					_isMarked = value;
+					NotifyOfPropertyChange(nameof(IsMarked));
+					NotifyOfPropertyChange(nameof(IsMarkVisible));
 				}
 			}
 		}
@@ -49,6 +65,8 @@ namespace Minesweeper.Classes
 				return count == 0 ? string.Empty : count.ToString();
 			}
 		}
+
+		public bool IsMarkVisible => IsMarked && !IsOpen;
 
 		public Brush Background { get; set; }
 

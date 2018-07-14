@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace Minesweeper
@@ -62,6 +63,7 @@ namespace Minesweeper
 					};
 
 					button.Click += CellButton_Click;
+					button.RightTapped += CellButton_RightTapped;
 
 					Grid.SetRow(button, i);
 					Grid.SetColumn(button, j);
@@ -148,6 +150,9 @@ namespace Minesweeper
 			if (cell == null)
 				return;
 
+			if (cell.IsMarked)
+				return;
+
 			foreach (var cells in _cellsList)
 				cells.IsChecked = false;
 
@@ -155,6 +160,18 @@ namespace Minesweeper
 
 			if (cell.Count == 0)
 				Open(cell.Cells);
+		}
+
+		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
+		{
+			var cell = ((FrameworkElement)sender).DataContext as Cell;
+			if (cell == null)
+				return;
+
+			if (cell.IsOpen)
+				return;
+
+			cell.IsMarked = !cell.IsMarked;
 		}
 
 		private void Open(IEnumerable<Cell> cells)
