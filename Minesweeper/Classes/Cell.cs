@@ -76,6 +76,13 @@ namespace Minesweeper.Classes
 
 		public Button Button { get; set; }
 
+		public void UpdateBindings()
+		{
+			NotifyOfPropertyChange(nameof(Count));
+			NotifyOfPropertyChange(nameof(Content));
+			NotifyOfPropertyChange(nameof(Background));
+		}
+
 		public override string ToString() => Content;
 	}
 }

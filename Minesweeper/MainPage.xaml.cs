@@ -21,15 +21,21 @@ namespace Minesweeper
 		private int _height = 12;
 		private int _minesCount = 40;
 
+		private bool _generated;
+
 		public MainPage()
 		{
 			this.InitializeComponent();
 
+			Init();
+		}
+
+		private void Init()
+		{
+			_generated = false;
+
 			GenerateField();
 			GenerateCells();
-			GenerateMines();
-
-			SetCellBackgrounds();
 		}
 
 		private void GenerateField()
@@ -106,13 +112,17 @@ namespace Minesweeper
 			}
 		}
 
-		private void GenerateMines()
+		private void GenerateMines(Cell tappedCell)
 		{
 			var count = 0;
 			while (count < _minesCount)
 			{
 				var i = _random.Next(field.RowDefinitions.Count);
 				var j = _random.Next(field.ColumnDefinitions.Count);
+
+				if (tappedCell != null && _minesCount > 0 && _cellsList.Count > 1 &&
+					tappedCell.Row == i && tappedCell.Column == j)
+					continue;
 
 				if (_cells[i, j].IsMined)
 				{
@@ -124,6 +134,10 @@ namespace Minesweeper
 					count++;
 				}
 			}
+
+			SetCellBackgrounds();
+
+			_generated = true;
 		}
 
 		private void SetCellBackgrounds()
@@ -142,6 +156,8 @@ namespace Minesweeper
 
 				if (item.IsMined)
 					item.Background = new SolidColorBrush(Colors.PaleVioletRed);
+
+				item.UpdateBindings();
 			}
 		}
 
@@ -150,6 +166,9 @@ namespace Minesweeper
 			var cell = ((FrameworkElement)sender).DataContext as Cell;
 			if (cell == null)
 				return;
+
+			if (!_generated)
+				GenerateMines(cell);
 
 			if (cell.IsMarked)
 				return;
