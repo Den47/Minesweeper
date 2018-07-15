@@ -110,6 +110,8 @@ namespace Minesweeper
 					_cells[i, j].Cells.AddRange(list);
 				}
 			}
+
+			FlagsCounterTextBlock.Text = _minesCount.ToString();
 		}
 
 		private void GenerateMines(Cell tappedCell)
@@ -223,6 +225,11 @@ namespace Minesweeper
 				return;
 
 			cell.IsMarked = !cell.IsMarked;
+
+			if (cell.IsMarked)
+				FlagsCounterTextBlock.Text = (int.Parse(FlagsCounterTextBlock.Text) - 1).ToString();
+			else
+				FlagsCounterTextBlock.Text = (int.Parse(FlagsCounterTextBlock.Text) + 1).ToString();
 		}
 
 		private void Open(IEnumerable<Cell> cells)
