@@ -59,6 +59,12 @@
 			<Setter Property="Width" Value="24" />
 			<Setter Property="ContentTemplate" Value="{StaticResource CellButtonTemplate}" />
 		</Style>
+
+		<Style TargetType="Slider">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Margin" Value="0,0,10,0" />
+			<Setter Property="FontSize" Value="12" />
+		</Style>
 	</Page.Resources>
 
 	<Grid Padding="20" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -67,26 +73,56 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
-		<StackPanel Grid.Column="4"
-		            HorizontalAlignment="Right"
-		            VerticalAlignment="Center"
-		            Orientation="Horizontal">
-			<FontIcon FontFamily="Segoe UI Symbol"
-			          FontSize="12"
-			          Glyph="{StaticResource FlagSymbol}" />
+		<Grid Margin="0,0,0,10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="2*" MaxWidth="180" />
+				<ColumnDefinition Width="2*" MaxWidth="180" />
+				<ColumnDefinition Width="2*" MaxWidth="180" />
+				<ColumnDefinition Width="1*" />
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
 
-			<TextBlock x:Name="FlagsCounterTextBlock"
-			           Margin="0,0,10,0"
-			           VerticalAlignment="Center" />
+			<Slider x:Name="WidthSlider"
+			        Grid.Column="0"
+			        Header="Width"
+			        Maximum="40"
+			        Minimum="1"
+			        Value="32" />
 
-			<Button Click="RestartButton_Click">
+			<Slider x:Name="HeightSlider"
+			        Grid.Column="1"
+			        Header="Height"
+			        Maximum="20"
+			        Minimum="1"
+			        Value="16" />
+
+			<Slider x:Name="MinesSlider"
+			        Grid.Column="2"
+			        Header="Mines"
+			        Maximum="100"
+			        Minimum="0"
+			        Value="70" />
+
+			<StackPanel Grid.Column="4"
+			            VerticalAlignment="Center"
+			            Orientation="Horizontal">
+				<FontIcon FontFamily="Segoe UI Symbol"
+				          FontSize="12"
+				          Glyph="{StaticResource FlagSymbol}" />
+				<TextBlock x:Name="FlagsCounterTextBlock"
+				           Margin="0,0,10,0"
+				           VerticalAlignment="Center" />
+			</StackPanel>
+
+			<Button Grid.Column="5" Click="RestartButton_Click">
 				<FontIcon HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe UI Symbol"
 				          FontSize="12"
 				          Glyph="&#xE117;" />
 			</Button>
-		</StackPanel>
+		</Grid>
 
 		<Grid x:Name="field"
 		      Grid.Row="1"

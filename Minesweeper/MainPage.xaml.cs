@@ -17,9 +17,9 @@ namespace Minesweeper
 		private Cell[,] _cells;
 		private List<Cell> _cellsList;
 
-		private int _width = 24;
-		private int _height = 12;
-		private int _minesCount = 40;
+		private int _width;
+		private int _height;
+		private int _minesCount;
 
 		private bool _generated;
 
@@ -34,8 +34,19 @@ namespace Minesweeper
 		{
 			_generated = false;
 
+			SetParameters();
 			GenerateField();
 			GenerateCells();
+		}
+
+		private void SetParameters()
+		{
+			_height = (int)HeightSlider.Value;
+			_width = (int)WidthSlider.Value;
+			_minesCount = (int)MinesSlider.Value;
+
+			if (_minesCount > _height * _width)
+				_minesCount = _height * _width - 1;
 		}
 
 		private void GenerateField()
