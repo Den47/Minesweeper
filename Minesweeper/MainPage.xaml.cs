@@ -147,15 +147,36 @@ namespace Minesweeper
 				switch (item.Count)
 				{
 					case 0:
-						item.Background = new SolidColorBrush(Colors.WhiteSmoke);
+						item.Background = Brush0;
+						break;
+					case 1:
+						item.Background = Brush1;
+						break;
+					case 2:
+						item.Background = Brush2;
+						break;
+					case 3:
+						item.Background = Brush3;
+						break;
+					case 4:
+						item.Background = Brush4;
+						break;
+					case 5:
+						item.Background = Brush5;
+						break;
+					case 6:
+						item.Background = Brush6;
+						break;
+					case 7:
+						item.Background = Brush7;
 						break;
 					default:
-						item.Background = new SolidColorBrush(Colors.PaleGreen);
+						item.Background = Brush8;
 						break;
 				}
 
 				if (item.IsMined)
-					item.Background = new SolidColorBrush(Colors.PaleVioletRed);
+					item.Background = BrushMined;
 
 				item.UpdateBindings();
 			}
