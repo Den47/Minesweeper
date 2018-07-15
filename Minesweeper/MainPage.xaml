@@ -21,6 +21,9 @@
 		<SolidColorBrush x:Name="BrushMined" Color="#D65D5D" />
 		<SolidColorBrush x:Name="BrushClose" Color="LightGray" />
 
+		<SolidColorBrush x:Name="BrushCompleted" Color="PaleGreen" />
+		<SolidColorBrush x:Name="BrushFailed" Color="PaleVioletRed" />
+
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
 		<converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />

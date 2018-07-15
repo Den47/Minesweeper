@@ -43,6 +43,8 @@ namespace Minesweeper
 			field.Children.Clear();
 			field.ColumnDefinitions.Clear();
 			field.RowDefinitions.Clear();
+			field.Background = new SolidColorBrush(Colors.Transparent);
+			field.IsHitTestVisible = true;
 
 			for (int i = 0; i < _height; i++)
 				field.RowDefinitions.Add(new RowDefinition());
@@ -196,8 +198,13 @@ namespace Minesweeper
 			if (cell.IsMarked)
 				return;
 
-			foreach (var cells in _cellsList)
-				cells.IsChecked = false;
+			if (cell.IsMined)
+			{
+				RunFailedState();
+				return;
+			}
+
+			ResetChecking();
 
 			if (cell.IsOpen)
 			{
@@ -209,6 +216,7 @@ namespace Minesweeper
 			{
 				cell.IsOpen = true;
 				cell.IsChecked = true;
+				RunCompletedState();
 
 				if (cell.Count == 0)
 					Open(cell.Cells);
@@ -241,17 +249,59 @@ namespace Minesweeper
 		{
 			foreach (var cell in cells)
 			{
-				if (cell.IsChecked)
+				if (cell.IsChecked || cell.IsMarked)
 					continue;
 
 				if (cell.IsMined)
+				{
+					RunFailedState();
 					return;
+				}
 
 				cell.IsOpen = true;
 				cell.IsChecked = true;
 
 				if (cell.Count == 0)
 					Open(cell.Cells);
+			}
+
+			RunCompletedState();
+		}
+
+		private void ResetChecking()
+		{
+			foreach (var cells in _cellsList)
+				cells.IsChecked = false;
+		}
+
+		private void RunFailedState()
+		{
+			_cellsList.Where(x => x.IsMined).ToList().ForEach(x => x.IsOpen = true);
+
+			field.Background = BrushFailed;
+			field.IsHitTestVisible = false;
+			foreach (var cell in _cellsList)
+			{
+				cell.Button.IsTabStop = false;
+				cell.Button.Click -= CellButton_Click;
+				cell.Button.RightTapped -= CellButton_RightTapped;
+			}
+		}
+
+		private void RunCompletedState()
+		{
+			var closeCount = _cellsList.Count(x => !x.IsOpen);
+			var minedCount = _cellsList.Count(x => x.IsMined);
+			if (closeCount == minedCount)
+			{
+				field.Background = BrushCompleted;
+				field.IsHitTestVisible = false;
+				foreach (var cell in _cellsList)
+				{
+					cell.Button.IsTabStop = false;
+					cell.Button.Click -= CellButton_Click;
+					cell.Button.RightTapped -= CellButton_RightTapped;
+				}
 			}
 		}
 	}
