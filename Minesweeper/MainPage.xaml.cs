@@ -232,6 +232,11 @@ namespace Minesweeper
 				FlagsCounterTextBlock.Text = (int.Parse(FlagsCounterTextBlock.Text) + 1).ToString();
 		}
 
+		private void RestartButton_Click(object sender, RoutedEventArgs e)
+		{
+			Init();
+		}
+
 		private void Open(IEnumerable<Cell> cells)
 		{
 			foreach (var cell in cells)

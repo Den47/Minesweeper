@@ -21,6 +21,8 @@
 		<SolidColorBrush x:Name="BrushMined" Color="#D65D5D" />
 		<SolidColorBrush x:Name="BrushClose" Color="LightGray" />
 
+		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
+
 		<converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="classes:Cell">
@@ -36,7 +38,7 @@
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe UI Symbol"
 				          FontSize="12"
-				          Glyph="&#xE129;"
+				          Glyph="{StaticResource FlagSymbol}"
 				          Visibility="{Binding IsMarkVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 			</Grid>
 		</DataTemplate>
@@ -63,12 +65,24 @@
 		</Grid.RowDefinitions>
 
 		<StackPanel Grid.Column="4"
+		            HorizontalAlignment="Right"
 		            VerticalAlignment="Center"
 		            Orientation="Horizontal">
 			<FontIcon FontFamily="Segoe UI Symbol"
 			          FontSize="12"
-			          Glyph="&#xE129;" />
-			<TextBlock x:Name="FlagsCounterTextBlock" />
+			          Glyph="{StaticResource FlagSymbol}" />
+
+			<TextBlock x:Name="FlagsCounterTextBlock"
+			           Margin="0,0,10,0"
+			           VerticalAlignment="Center" />
+
+			<Button Click="RestartButton_Click">
+				<FontIcon HorizontalAlignment="Center"
+				          VerticalAlignment="Center"
+				          FontFamily="Segoe UI Symbol"
+				          FontSize="12"
+				          Glyph="&#xE117;" />
+			</Button>
 		</StackPanel>
 
 		<Grid x:Name="field"
