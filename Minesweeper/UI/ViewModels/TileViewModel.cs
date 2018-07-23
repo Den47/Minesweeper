@@ -5,16 +5,16 @@ using Windows.UI.Xaml.Media;
 
 namespace Minesweeper.UI.ViewModels
 {
-	public class Cell : PropertyChangedBase
+	public class TileViewModel : PropertyChangedBase
 	{
 		private bool _isOpen;
 		private bool _isMarked;
 
-		public Cell(int row, int column)
+		public TileViewModel(int row, int column)
 		{
 			Row = row;
 			Column = column;
-			Cells = new List<Cell>();
+			Cells = new List<TileViewModel>();
 		}
 
 		public int Column { get; }
@@ -69,7 +69,7 @@ namespace Minesweeper.UI.ViewModels
 
 		public Brush Background { get; set; }
 
-		public List<Cell> Cells { get; }
+		public List<TileViewModel> Cells { get; }
 
 		public int Count { get; set; }
 

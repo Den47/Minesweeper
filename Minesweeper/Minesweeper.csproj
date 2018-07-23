@@ -97,8 +97,10 @@
     </Compile>
     <Compile Include="UI\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\Support\Execute.cs" />
     <Compile Include="UI\Support\PropertyChangedBase.cs" />
-    <Compile Include="UI\ViewModels\Cell.cs" />
+    <Compile Include="UI\ViewModels\RelayCommands.cs" />
+    <Compile Include="UI\ViewModels\TileViewModel.cs" />
     <Compile Include="UI\ViewModels\GameViewModel.cs" />
     <Compile Include="UI\Views\GameView.xaml.cs">
       <DependentUpon>GameView.xaml</DependentUpon>

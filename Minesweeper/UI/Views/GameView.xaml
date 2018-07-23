@@ -25,14 +25,11 @@
 		<SolidColorBrush x:Name="BrushMined" Color="#D65D5D" />
 		<SolidColorBrush x:Name="BrushClose" Color="LightGray" />
 
-		<SolidColorBrush x:Name="BrushCompleted" Color="PaleGreen" />
-		<SolidColorBrush x:Name="BrushFailed" Color="PaleVioletRed" />
-
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:Cell">
+		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:TileViewModel">
 			<Grid>
 				<Border Background="{Binding Background}" />
 
@@ -94,21 +91,21 @@
 			        Header="Width"
 			        Maximum="40"
 			        Minimum="1"
-			        Value="32" />
+			        Value="{Binding FieldWidth, Mode=TwoWay}" />
 
 			<Slider x:Name="HeightSlider"
 			        Grid.Column="1"
 			        Header="Height"
 			        Maximum="20"
 			        Minimum="1"
-			        Value="16" />
+			        Value="{Binding FieldHeight, Mode=TwoWay}" />
 
 			<Slider x:Name="MinesSlider"
 			        Grid.Column="2"
 			        Header="Mines"
 			        Maximum="100"
 			        Minimum="0"
-			        Value="70" />
+			        Value="{Binding MinesCount, Mode=TwoWay}" />
 
 			<StackPanel Grid.Column="4"
 			            VerticalAlignment="Center"
@@ -118,10 +115,11 @@
 				          Glyph="{StaticResource FlagSymbol}" />
 				<TextBlock x:Name="FlagsCounterTextBlock"
 				           Margin="0,0,10,0"
-				           VerticalAlignment="Center" />
+				           VerticalAlignment="Center"
+				           Text="{Binding FlagsCount}" />
 			</StackPanel>
 
-			<Button Grid.Column="5" Click="RestartButton_Click">
+			<Button Grid.Column="5" Command="{Binding RestartCommand}">
 				<FontIcon HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe UI Symbol"
@@ -138,7 +136,9 @@
 			<Grid x:Name="field"
 			      Padding="1"
 			      HorizontalAlignment="Center"
-			      VerticalAlignment="Center" />
+			      VerticalAlignment="Center"
+			      Background="{Binding FieldBackground}"
+			      IsHitTestVisible="{Binding FieldIsActive}" />
 		</ScrollViewer>
 	</Grid>
 </Page>

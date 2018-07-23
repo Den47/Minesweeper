@@ -77,40 +77,43 @@ namespace Minesweeper.Game
 
 		public void Open(int row, int column)
 		{
-			var cell = _cells[row, column];
-
-			if (!_fieldGenerated)
-				GenerateMines(cell);
-
-			if (cell.IsMarked)
-				return;
-
-			if (cell.IsMined)
+			Task.Run(() =>
 			{
-				SetState(GameState.Failed);
-				return;
-			}
+				var cell = _cells[row, column];
 
-			ResetChecking();
+				if (!_fieldGenerated)
+					GenerateMines(cell);
 
-			if (cell.IsOpen)
-			{
-				var notMarkedCells = cell.Neighbors.Where(x => !x.IsMarked);
-				if (notMarkedCells.Count() == cell.Neighbors.Count - cell.Count)
-					Open(notMarkedCells);
-			}
-			else
-			{
-				cell.IsOpen = true;
-				cell.IsChecked = true;
+				if (cell.IsMarked)
+					return;
 
-				CellOpenned?.Invoke(cell.Row, cell.Column);
+				if (cell.IsMined)
+				{
+					SetState(GameState.Failed);
+					return;
+				}
 
-				CheckCompletedState();
+				ResetChecking();
 
-				if (cell.Count == 0)
-					Open(cell.Neighbors);
-			}
+				if (cell.IsOpen)
+				{
+					var notMarkedCells = cell.Neighbors.Where(x => !x.IsMarked);
+					if (notMarkedCells.Count() == cell.Neighbors.Count - cell.Count)
+						Open(notMarkedCells);
+				}
+				else
+				{
+					cell.IsOpen = true;
+					cell.IsChecked = true;
+
+					CellOpenned?.Invoke(cell.Row, cell.Column);
+
+					CheckCompletedState();
+
+					if (cell.Count == 0)
+						Open(cell.Neighbors);
+				}
+			});
 		}
 
 		public void Mark(int row, int column)
