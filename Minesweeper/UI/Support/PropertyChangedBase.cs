@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 
-namespace Minesweeper.Support
+namespace Minesweeper.UI.Support
 {
-
 	public class PropertyChangedBase : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;

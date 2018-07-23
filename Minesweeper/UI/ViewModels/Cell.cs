@@ -1,11 +1,11 @@
-﻿using Minesweeper.Support;
+﻿using Minesweeper.UI.Support;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-namespace Minesweeper.Classes
+namespace Minesweeper.UI.ViewModels
 {
-	internal class Cell : PropertyChangedBase
+	public class Cell : PropertyChangedBase
 	{
 		private bool _isOpen;
 		private bool _isMarked;

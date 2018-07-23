@@ -1,11 +1,15 @@
-﻿<Page x:Class="Minesweeper.MainPage"
+﻿<Page x:Class="Minesweeper.UI.Views.GameView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:classes="using:Minesweeper.Classes"
-      xmlns:converters="using:Minesweeper.Converters"
+      xmlns:converters="using:Minesweeper.UI.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:Minesweeper.UI.ViewModels"
       mc:Ignorable="d">
+
+	<Page.DataContext>
+		<viewModels:GameViewModel />
+	</Page.DataContext>
 
 	<Page.Resources>
 		<SolidColorBrush x:Name="Brush0" Color="#F1F1F1" />
@@ -26,9 +30,9 @@
 
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
-		<converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-		<DataTemplate x:Key="CellButtonTemplate" x:DataType="classes:Cell">
+		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:Cell">
 			<Grid>
 				<Border Background="{Binding Background}" />
 

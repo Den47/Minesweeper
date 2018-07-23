@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Minesweeper.UI.Views;
+using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -56,7 +57,7 @@ namespace Minesweeper
 					// When the navigation stack isn't restored navigate to the first page,
 					// configuring the new page by passing required information as a navigation
 					// parameter
-					rootFrame.Navigate(typeof(MainPage), e.Arguments);
+					rootFrame.Navigate(typeof(GameView), e.Arguments);
 				}
 				// Ensure the current window is active
 				Window.Current.Activate();

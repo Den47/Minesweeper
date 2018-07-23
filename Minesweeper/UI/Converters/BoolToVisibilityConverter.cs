@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Minesweeper.Converters
+namespace Minesweeper.UI.Converters
 {
 	public class BoolToVisibilityConverter : IValueConverter
 	{

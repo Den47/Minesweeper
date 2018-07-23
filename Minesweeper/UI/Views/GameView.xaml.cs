@@ -1,4 +1,4 @@
-﻿using Minesweeper.Classes;
+﻿using Minesweeper.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +10,15 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace Minesweeper
+namespace Minesweeper.UI.Views
 {
-	public sealed partial class MainPage
+	public sealed partial class GameView
 	{
 		private readonly Game.Process _gameProcess;
 
 		private List<Button> _cells;
 
-		public MainPage()
+		public GameView()
 		{
 			this.InitializeComponent();
 
