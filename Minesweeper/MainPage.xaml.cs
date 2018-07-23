@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -10,191 +12,151 @@ using Windows.UI.Xaml.Media;
 
 namespace Minesweeper
 {
-	public sealed partial class MainPage : Page
+	public sealed partial class MainPage
 	{
-		private readonly Random _random = new Random();
+		private readonly Game.Process _gameProcess;
 
-		private Cell[,] _cells;
-		private List<Cell> _cellsList;
-
-		private int _width;
-		private int _height;
-		private int _minesCount;
-
-		private bool _generated;
+		private List<Button> _cells;
 
 		public MainPage()
 		{
 			this.InitializeComponent();
 
-			Init();
+			_gameProcess = new Game.Process();
+			_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
+			_gameProcess.FieldCreated += GameProcess_FieldUpdated;
+			_gameProcess.CellOpenned += GameProcess_CellOpenned;
+			_gameProcess.MinesUpdated += GameProcess_MinesUpdated;
+			_gameProcess.Restart((int)WidthSlider.Value, (int)HeightSlider.Value, (int)MinesSlider.Value);
 		}
 
-		private void Init()
+		private void GameProcess_GameStateChanged(Game.GameState state)
 		{
-			_generated = false;
-
-			SetParameters();
-			GenerateField();
-			GenerateCells();
-		}
-
-		private void SetParameters()
-		{
-			_height = (int)HeightSlider.Value;
-			_width = (int)WidthSlider.Value;
-			_minesCount = (int)MinesSlider.Value;
-
-			if (_minesCount > _height * _width)
-				_minesCount = _height * _width - 1;
-		}
-
-		private void GenerateField()
-		{
-			field.Children.Clear();
-			field.ColumnDefinitions.Clear();
-			field.RowDefinitions.Clear();
-			field.Background = new SolidColorBrush(Colors.Transparent);
-			field.IsHitTestVisible = true;
-
-			for (int i = 0; i < _height; i++)
-				field.RowDefinitions.Add(new RowDefinition());
-			for (int i = 0; i < _width; i++)
-				field.ColumnDefinitions.Add(new ColumnDefinition());
-		}
-
-		private void GenerateCells()
-		{
-			_cells = new Cell[_height, _width];
-			_cellsList = new List<Cell>();
-
-			for (int i = 0; i < field.RowDefinitions.Count; i++)
+			switch (state)
 			{
-				for (int j = 0; j < field.ColumnDefinitions.Count; j++)
-				{
-					var cell = new Cell(i, j);
-					_cells[i, j] = cell;
-					_cellsList.Add(cell);
+				case Game.GameState.Undefined:
+					ExecuteOnUIThread(RunDisableState);
+					break;
+				case Game.GameState.Generating:
+					ExecuteOnUIThread(RunDisableState);
+					break;
+				case Game.GameState.Ready:
+					ExecuteOnUIThread(RunActiveState);
+					break;
+				case Game.GameState.Playing:
+					ExecuteOnUIThread(RunActiveState);
+					break;
+				case Game.GameState.Success:
+					ExecuteOnUIThread(RunSuccessState);
+					break;
+				case Game.GameState.Failed:
+					ExecuteOnUIThread(RunFailedState);
+					break;
+				default:
+					break;
+			}
+		}
 
-					var button = new Button
+		private void GameProcess_FieldUpdated(int width, int height, int minesCount)
+		{
+			ExecuteOnUIThread(() =>
+			{
+				field.Children.Clear();
+				field.ColumnDefinitions.Clear();
+				field.RowDefinitions.Clear();
+
+				for (int i = 0; i < height; i++)
+					field.RowDefinitions.Add(new RowDefinition());
+				for (int i = 0; i < width; i++)
+					field.ColumnDefinitions.Add(new ColumnDefinition());
+
+				_cells = new List<Button>();
+
+				for (int i = 0; i < field.RowDefinitions.Count; i++)
+				{
+					for (int j = 0; j < field.ColumnDefinitions.Count; j++)
 					{
-						DataContext = cell,
-						Style = CellButtonStyle
-					};
+						var button = new Button
+						{
+							DataContext = new Cell(i, j),
+							Style = CellButtonStyle
+						};
 
-					button.Click += CellButton_Click;
-					button.RightTapped += CellButton_RightTapped;
+						button.Click += CellButton_Click;
+						button.RightTapped += CellButton_RightTapped;
 
-					Grid.SetRow(button, i);
-					Grid.SetColumn(button, j);
+						Grid.SetRow(button, i);
+						Grid.SetColumn(button, j);
 
-					field.Children.Add(button);
+						field.Children.Add(button);
 
-					cell.Button = button;
+						_cells.Add(button);
+					}
 				}
-			}
 
-			for (int i = 0; i < field.RowDefinitions.Count; i++)
-			{
-				for (int j = 0; j < field.ColumnDefinitions.Count; j++)
-				{
-					var rows = field.RowDefinitions.Count;
-					var cols = field.ColumnDefinitions.Count;
-					var list = new List<Cell>();
-
-					if (i + 1 < rows)
-						list.Add(_cells[i + 1, j]);
-					if (i - 1 >= 0)
-						list.Add(_cells[i - 1, j]);
-					if (j + 1 < cols)
-						list.Add(_cells[i, j + 1]);
-					if (j - 1 >= 0)
-						list.Add(_cells[i, j - 1]);
-
-					if (i + 1 < rows && j + 1 < cols)
-						list.Add(_cells[i + 1, j + 1]);
-					if (i - 1 >= 0 && j - 1 >= 0)
-						list.Add(_cells[i - 1, j - 1]);
-					if (i + 1 < rows && j - 1 >= 0)
-						list.Add(_cells[i + 1, j - 1]);
-					if (i - 1 >= 0 && j + 1 < cols)
-						list.Add(_cells[i - 1, j + 1]);
-
-					_cells[i, j].Cells.AddRange(list);
-				}
-			}
-
-			FlagsCounterTextBlock.Text = _minesCount.ToString();
+				FlagsCounterTextBlock.Text = minesCount.ToString();
+			});
 		}
 
-		private void GenerateMines(Cell tappedCell)
+		private void GameProcess_CellOpenned(int row, int column)
 		{
-			var count = 0;
-			while (count < _minesCount)
+			ExecuteOnUIThread(() =>
 			{
-				var i = _random.Next(field.RowDefinitions.Count);
-				var j = _random.Next(field.ColumnDefinitions.Count);
-
-				if (tappedCell != null && _minesCount > 0 && _cellsList.Count > 1 &&
-					tappedCell.Row == i && tappedCell.Column == j)
-					continue;
-
-				if (_cells[i, j].IsMined)
-				{
-					continue;
-				}
-				else
-				{
-					_cells[i, j].IsMined = true;
-					count++;
-				}
-			}
-
-			SetCellBackgrounds();
-
-			_generated = true;
+				var item = _cells.Select(x => x.DataContext).OfType<Cell>().FirstOrDefault(x => x.Row == row && x.Column == column);
+				if (item != null)
+					item.IsOpen = true;
+			});
 		}
 
-		private void SetCellBackgrounds()
+		private void GameProcess_MinesUpdated()
 		{
-			foreach (var item in _cellsList)
+			ExecuteOnUIThread(() =>
 			{
-				switch (item.Count)
+				foreach (var button in _cells)
 				{
-					case 0:
-						item.Background = Brush0;
-						break;
-					case 1:
-						item.Background = Brush1;
-						break;
-					case 2:
-						item.Background = Brush2;
-						break;
-					case 3:
-						item.Background = Brush3;
-						break;
-					case 4:
-						item.Background = Brush4;
-						break;
-					case 5:
-						item.Background = Brush5;
-						break;
-					case 6:
-						item.Background = Brush6;
-						break;
-					case 7:
-						item.Background = Brush7;
-						break;
-					default:
-						item.Background = Brush8;
-						break;
+					var item = (Cell)(button.DataContext);
+					var count = _gameProcess.GetCount(item.Row, item.Column);
+					switch (count)
+					{
+						case 0:
+							item.Background = Brush0;
+							break;
+						case 1:
+							item.Background = Brush1;
+							break;
+						case 2:
+							item.Background = Brush2;
+							break;
+						case 3:
+							item.Background = Brush3;
+							break;
+						case 4:
+							item.Background = Brush4;
+							break;
+						case 5:
+							item.Background = Brush5;
+							break;
+						case 6:
+							item.Background = Brush6;
+							break;
+						case 7:
+							item.Background = Brush7;
+							break;
+						default:
+							item.Background = Brush8;
+							break;
+					}
+
+					item.IsMined = _gameProcess.IsMined(item.Row, item.Column);
+
+					item.Count = count;
+
+					if (item.IsMined)
+						item.Background = BrushMined;
+
+					item.UpdateBindings();
 				}
-
-				if (item.IsMined)
-					item.Background = BrushMined;
-
-				item.UpdateBindings();
-			}
+			});
 		}
 
 		private void CellButton_Click(object sender, RoutedEventArgs e)
@@ -203,35 +165,7 @@ namespace Minesweeper
 			if (cell == null)
 				return;
 
-			if (!_generated)
-				GenerateMines(cell);
-
-			if (cell.IsMarked)
-				return;
-
-			if (cell.IsMined)
-			{
-				RunFailedState();
-				return;
-			}
-
-			ResetChecking();
-
-			if (cell.IsOpen)
-			{
-				var notMarkedCells = cell.Cells.Where(x => !x.IsMarked);
-				if (notMarkedCells.Count() == cell.Cells.Count - cell.Count)
-					Open(notMarkedCells);
-			}
-			else
-			{
-				cell.IsOpen = true;
-				cell.IsChecked = true;
-				RunCompletedState();
-
-				if (cell.Count == 0)
-					Open(cell.Cells);
-			}
+			Task.Run(() => _gameProcess.Open(cell.Row, cell.Column));
 		}
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -240,10 +174,8 @@ namespace Minesweeper
 			if (cell == null)
 				return;
 
-			if (cell.IsOpen)
-				return;
-
 			cell.IsMarked = !cell.IsMarked;
+			_gameProcess.Mark(cell.Row, cell.Column);
 
 			if (cell.IsMarked)
 				FlagsCounterTextBlock.Text = (int.Parse(FlagsCounterTextBlock.Text) - 1).ToString();
@@ -253,67 +185,53 @@ namespace Minesweeper
 
 		private void RestartButton_Click(object sender, RoutedEventArgs e)
 		{
-			Init();
+			_gameProcess.Restart((int)WidthSlider.Value, (int)HeightSlider.Value, (int)MinesSlider.Value);
 		}
 
-		private void Open(IEnumerable<Cell> cells)
+		private void RunActiveState()
 		{
-			foreach (var cell in cells)
+			field.Background = new SolidColorBrush(Colors.Transparent);
+			field.IsHitTestVisible = true;
+		}
+
+		private void RunDisableState()
+		{
+			field.Background = new SolidColorBrush(Colors.Transparent);
+			field.IsHitTestVisible = false;
+		}
+
+		private void RunSuccessState()
+		{
+			field.Background = BrushCompleted;
+			field.IsHitTestVisible = false;
+			foreach (var cell in _cells)
 			{
-				if (cell.IsChecked || cell.IsMarked)
-					continue;
-
-				if (cell.IsMined)
-				{
-					RunFailedState();
-					return;
-				}
-
-				cell.IsOpen = true;
-				cell.IsChecked = true;
-
-				if (cell.Count == 0)
-					Open(cell.Cells);
+				cell.IsTabStop = false;
+				cell.Click -= CellButton_Click;
+				cell.RightTapped -= CellButton_RightTapped;
 			}
-
-			RunCompletedState();
-		}
-
-		private void ResetChecking()
-		{
-			foreach (var cells in _cellsList)
-				cells.IsChecked = false;
 		}
 
 		private void RunFailedState()
 		{
-			_cellsList.Where(x => x.IsMined).ToList().ForEach(x => x.IsOpen = true);
+			_cells.Select(x => x.DataContext).OfType<Cell>().Where(x => x.IsMined).ToList().ForEach(x => x.IsOpen = true);
 
 			field.Background = BrushFailed;
 			field.IsHitTestVisible = false;
-			foreach (var cell in _cellsList)
+			foreach (var cell in _cells)
 			{
-				cell.Button.IsTabStop = false;
-				cell.Button.Click -= CellButton_Click;
-				cell.Button.RightTapped -= CellButton_RightTapped;
+				cell.IsTabStop = false;
+				cell.Click -= CellButton_Click;
+				cell.RightTapped -= CellButton_RightTapped;
 			}
 		}
 
-		private void RunCompletedState()
+		private void ExecuteOnUIThread(Action action)
 		{
-			var closeCount = _cellsList.Count(x => !x.IsOpen);
-			var minedCount = _cellsList.Count(x => x.IsMined);
-			if (closeCount == minedCount)
+			var task = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
 			{
-				field.Background = BrushCompleted;
-				field.IsHitTestVisible = false;
-				foreach (var cell in _cellsList)
-				{
-					cell.Button.IsTabStop = false;
-					cell.Button.Click -= CellButton_Click;
-					cell.Button.RightTapped -= CellButton_RightTapped;
-				}
-			}
+				action();
+			});
 		}
 	}
 }

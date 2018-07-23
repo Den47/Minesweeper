@@ -1,6 +1,5 @@
 ﻿using Minesweeper.Support;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -72,7 +71,7 @@ namespace Minesweeper.Classes
 
 		public List<Cell> Cells { get; }
 
-		public int Count => IsMined ? int.MaxValue : (Cells?.Count(x => x.IsMined) ?? 0);
+		public int Count { get; set; }
 
 		public Button Button { get; set; }
 

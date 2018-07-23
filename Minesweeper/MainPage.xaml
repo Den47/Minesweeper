@@ -29,7 +29,9 @@
 		<converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="classes:Cell">
-			<Grid Background="{Binding Background}">
+			<Grid>
+				<Border Background="{Binding Background}" />
+
 				<TextBlock HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
 				           FontSize="12"
@@ -124,10 +126,15 @@
 			</Button>
 		</Grid>
 
-		<Grid x:Name="field"
-		      Grid.Row="1"
-		      Padding="1"
-		      HorizontalAlignment="Center"
-		      VerticalAlignment="Center" />
+		<ScrollViewer Grid.Row="1"
+		              HorizontalAlignment="Stretch"
+		              VerticalAlignment="Stretch"
+		              HorizontalScrollBarVisibility="Auto"
+		              VerticalScrollBarVisibility="Auto">
+			<Grid x:Name="field"
+			      Padding="1"
+			      HorizontalAlignment="Center"
+			      VerticalAlignment="Center" />
+		</ScrollViewer>
 	</Grid>
 </Page>
