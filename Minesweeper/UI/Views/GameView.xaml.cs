@@ -11,32 +11,10 @@ namespace Minesweeper.UI.Views
 		public GameView()
 		{
 			this.InitializeComponent();
-			Loaded += GameView_Loaded;
+			DataContextChanged += GameView_DataContextChanged;
 		}
 
-		public GameViewModel ViewModel => DataContext as GameViewModel;
-
-		private void GameView_Loaded(object sender, RoutedEventArgs e)
-		{
-			Loaded -= GameView_Loaded;
-
-			if (ViewModel != null)
-			{
-				ViewModel.FieldUpdated += ViewModel_FieldUpdated;
-
-				ViewModel.Brush0 = Brush0;
-				ViewModel.Brush1 = Brush1;
-				ViewModel.Brush2 = Brush2;
-				ViewModel.Brush3 = Brush3;
-				ViewModel.Brush4 = Brush4;
-				ViewModel.Brush5 = Brush5;
-				ViewModel.Brush6 = Brush6;
-				ViewModel.Brush7 = Brush7;
-				ViewModel.Brush8 = Brush8;
-				ViewModel.BrushClose = BrushClose;
-				ViewModel.BrushMined = BrushMined;
-			}
-		}
+		public GameViewModel ViewModel { get; private set; }
 
 		private void ViewModel_FieldUpdated(int width, int height)
 		{
@@ -79,7 +57,18 @@ namespace Minesweeper.UI.Views
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
 		{
-			ViewModel?.Mark(((FrameworkElement)sender).DataContext as TileViewModel);
+			ViewModel.Mark(((FrameworkElement)sender).DataContext as TileViewModel);
+		}
+
+		private void GameView_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+		{
+			if (ViewModel != null)
+				ViewModel.FieldUpdated -= ViewModel_FieldUpdated;
+
+			ViewModel = args.NewValue as GameViewModel;
+
+			if (ViewModel != null)
+				ViewModel.FieldUpdated += ViewModel_FieldUpdated;
 		}
 	}
 }

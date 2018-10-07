@@ -12,19 +12,6 @@
 	</Page.DataContext>
 
 	<Page.Resources>
-		<SolidColorBrush x:Name="Brush0" Color="#F1F1F1" />
-		<SolidColorBrush x:Name="Brush1" Color="#E1FFE0" />
-		<SolidColorBrush x:Name="Brush2" Color="#E0F9FF" />
-		<SolidColorBrush x:Name="Brush3" Color="#F9FFB6" />
-		<SolidColorBrush x:Name="Brush4" Color="#FFE0B6" />
-		<SolidColorBrush x:Name="Brush5" Color="#FFCDB6" />
-		<SolidColorBrush x:Name="Brush6" Color="#FFB6B6" />
-		<SolidColorBrush x:Name="Brush7" Color="#FF9898" />
-		<SolidColorBrush x:Name="Brush8" Color="#FF8888" />
-
-		<SolidColorBrush x:Name="BrushMined" Color="#D65D5D" />
-		<SolidColorBrush x:Name="BrushClose" Color="LightGray" />
-
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -38,7 +25,7 @@
 				           FontSize="12"
 				           Text="{Binding Content}" />
 
-				<Border Background="{StaticResource BrushClose}" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
+				<Border Background="#FFDEDEDE" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
 
 				<FontIcon HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
@@ -54,7 +41,7 @@
 			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 			<Setter Property="VerticalContentAlignment" Value="Stretch" />
-			<Setter Property="BorderBrush" Value="{StaticResource Brush0}" />
+			<Setter Property="BorderBrush" Value="#FFDEDEDE" />
 			<Setter Property="BorderThickness" Value="1" />
 			<Setter Property="Margin" Value="1" />
 			<Setter Property="Padding" Value="0" />

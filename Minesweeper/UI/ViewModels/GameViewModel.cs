@@ -1,5 +1,6 @@
 ﻿using Minesweeper.Game;
 using Minesweeper.UI.Support;
+using Minesweeper.UI.ViewModels.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,28 +122,6 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		public Brush Brush0 { get; set; }
-
-		public Brush Brush1 { get; set; }
-
-		public Brush Brush2 { get; set; }
-
-		public Brush Brush3 { get; set; }
-
-		public Brush Brush4 { get; set; }
-
-		public Brush Brush5 { get; set; }
-
-		public Brush Brush6 { get; set; }
-
-		public Brush Brush7 { get; set; }
-
-		public Brush Brush8 { get; set; }
-
-		public Brush BrushMined { get; set; }
-
-		public Brush BrushClose { get; set; }
-
 		public RelayCommand RestartCommand { get; }
 
 		public RelayCommand<TileViewModel> OpenTileCommand { get; }
@@ -220,31 +199,31 @@ namespace Minesweeper.UI.ViewModels
 					switch (count)
 					{
 						case 0:
-							item.Background = Brush0;
+							item.Background = FieldBrushes.Brush0;
 							break;
 						case 1:
-							item.Background = Brush1;
+							item.Background = FieldBrushes.Brush1;
 							break;
 						case 2:
-							item.Background = Brush2;
+							item.Background = FieldBrushes.Brush2;
 							break;
 						case 3:
-							item.Background = Brush3;
+							item.Background = FieldBrushes.Brush3;
 							break;
 						case 4:
-							item.Background = Brush4;
+							item.Background = FieldBrushes.Brush4;
 							break;
 						case 5:
-							item.Background = Brush5;
+							item.Background = FieldBrushes.Brush5;
 							break;
 						case 6:
-							item.Background = Brush6;
+							item.Background = FieldBrushes.Brush6;
 							break;
 						case 7:
-							item.Background = Brush7;
+							item.Background = FieldBrushes.Brush7;
 							break;
 						default:
-							item.Background = Brush8;
+							item.Background = FieldBrushes.Brush8;
 							break;
 					}
 
@@ -253,7 +232,7 @@ namespace Minesweeper.UI.ViewModels
 					item.Count = count;
 
 					if (item.IsMined)
-						item.Background = BrushMined;
+						item.Background = FieldBrushes.BrushMined;
 
 					item.UpdateBindings();
 				}
