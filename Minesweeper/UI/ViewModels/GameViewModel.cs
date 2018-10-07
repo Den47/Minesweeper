@@ -28,6 +28,7 @@ namespace Minesweeper.UI.ViewModels
 		private Brush _fieldBackground;
 
 		private List<Button> _cells;
+		private List<TileViewModel> _tiles;
 
 		public GameViewModel()
 		{
@@ -126,9 +127,10 @@ namespace Minesweeper.UI.ViewModels
 
 		public RelayCommand<TileViewModel> OpenTileCommand { get; }
 
-		public void SetCells(List<Button> buttons)
+		public void SetCells(List<Button> buttons, List<TileViewModel> tiles)
 		{
 			_cells = buttons;
+			_tiles = tiles;
 		}
 
 		public void Mark(TileViewModel tile)
@@ -180,21 +182,17 @@ namespace Minesweeper.UI.ViewModels
 
 		private void GameProcess_CellOpenned(int row, int column)
 		{
-			Execute.OnUIThread(() =>
-			{
-				var item = _cells.Select(x => x.DataContext).OfType<TileViewModel>().FirstOrDefault(x => x.Row == row && x.Column == column);
-				if (item != null)
-					item.IsOpen = true;
-			});
+			var item = _tiles.FirstOrDefault(x => x.Row == row && x.Column == column);
+			if (item != null)
+				Execute.OnUIThread(() => item.IsOpen = true);
 		}
 
 		private void GameProcess_MinesUpdated()
 		{
 			Execute.OnUIThread(() =>
 			{
-				foreach (var button in _cells)
+				foreach (var item in _tiles)
 				{
-					var item = (TileViewModel)(button.DataContext);
 					var count = _gameProcess.GetCount(item.Row, item.Column);
 					switch (count)
 					{

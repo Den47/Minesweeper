@@ -28,14 +28,17 @@ namespace Minesweeper.UI.Views
 				field.ColumnDefinitions.Add(new ColumnDefinition());
 
 			var _cells = new List<Button>();
+			var _tiles = new List<TileViewModel>();
 
 			for (int i = 0; i < field.RowDefinitions.Count; i++)
 			{
 				for (int j = 0; j < field.ColumnDefinitions.Count; j++)
 				{
+					var tile = new TileViewModel(i, j);
+
 					var button = new Button
 					{
-						DataContext = new TileViewModel(i, j),
+						DataContext = tile,
 						Style = CellButtonStyle
 					};
 
@@ -49,10 +52,11 @@ namespace Minesweeper.UI.Views
 					field.Children.Add(button);
 
 					_cells.Add(button);
+					_tiles.Add(tile);
 				}
 			}
 
-			ViewModel.SetCells(_cells);
+			ViewModel.SetCells(_cells, _tiles);
 		}
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
