@@ -7,8 +7,10 @@ namespace Minesweeper.UI.ViewModels
 {
 	public class TileViewModel : PropertyChangedBase
 	{
+		private int _count;
 		private bool _isOpen;
 		private bool _isMarked;
+		private bool _isMined;
 
 		public TileViewModel(int row, int column)
 		{
@@ -21,9 +23,20 @@ namespace Minesweeper.UI.ViewModels
 
 		public int Row { get; }
 
-		public bool IsMined { get; set; }
-
 		public bool IsChecked { get; set; }
+
+		public int Count
+		{
+			get => _count;
+			set
+			{
+				if (_count != value)
+				{
+					_count = value;
+					NotifyOfPropertyChange(nameof(Count));
+				}
+			}
+		}
 
 		public bool IsOpen
 		{
@@ -53,6 +66,19 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
+		public bool IsMined
+		{
+			get => _isMined;
+			set
+			{
+				if (_isMined != value)
+				{
+					_isMined = value;
+					NotifyOfPropertyChange(nameof(IsMined));
+				}
+			}
+		}
+
 		public string Content
 		{
 			get
@@ -69,11 +95,18 @@ namespace Minesweeper.UI.ViewModels
 
 		public Brush Background { get; set; }
 
-		public List<TileViewModel> Cells { get; }
-
-		public int Count { get; set; }
+		public List<TileViewModel> Cells { get; private set; }
 
 		public Button Button { get; set; }
+
+		public void ResetState()
+		{
+			IsMined = false;
+			IsOpen = false;
+			IsMarked = false;
+			Count = 0;
+			Background = null;
+		}
 
 		public void UpdateBindings()
 		{
