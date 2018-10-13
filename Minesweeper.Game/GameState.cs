@@ -3,7 +3,6 @@
 	public enum GameState
 	{
 		Undefined,
-		Generating,
 		Ready,
 		Playing,
 		Success,

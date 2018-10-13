@@ -107,6 +107,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Classes\Cell.cs" />
+    <Compile Include="Classes\Field.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

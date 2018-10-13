@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Minesweeper.UI.ViewModels
+namespace Minesweeper.UI.Support
 {
 	public class RelayCommand : ICommand
 	{

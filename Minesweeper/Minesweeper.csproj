@@ -100,7 +100,7 @@
     <Compile Include="UI\Support\Execute.cs" />
     <Compile Include="UI\Support\PropertyChangedBase.cs" />
     <Compile Include="UI\ViewModels\Classes\FieldBrushes.cs" />
-    <Compile Include="UI\ViewModels\RelayCommands.cs" />
+    <Compile Include="UI\Support\RelayCommands.cs" />
     <Compile Include="UI\ViewModels\TileViewModel.cs" />
     <Compile Include="UI\ViewModels\GameViewModel.cs" />
     <Compile Include="UI\Views\GameView.xaml.cs">

@@ -11,12 +11,9 @@ namespace Minesweeper.UI.Views
 		public GameView()
 		{
 			this.InitializeComponent();
-			DataContextChanged += GameView_DataContextChanged;
 		}
 
-		public GameViewModel ViewModel { get; private set; }
-
-		private void ViewModel_FieldUpdated(int width, int height)
+		private void ViewModel_FieldCreated(int width, int height)
 		{
 			field.Children.Clear();
 			field.ColumnDefinitions.Clear();
@@ -61,18 +58,7 @@ namespace Minesweeper.UI.Views
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
 		{
-			ViewModel.Mark(((FrameworkElement)sender).DataContext as TileViewModel);
-		}
-
-		private void GameView_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-		{
-			if (ViewModel != null)
-				ViewModel.FieldUpdated -= ViewModel_FieldUpdated;
-
-			ViewModel = args.NewValue as GameViewModel;
-
-			if (ViewModel != null)
-				ViewModel.FieldUpdated += ViewModel_FieldUpdated;
+			ViewModel.Mark((TileViewModel)((FrameworkElement)sender).DataContext);
 		}
 	}
 }

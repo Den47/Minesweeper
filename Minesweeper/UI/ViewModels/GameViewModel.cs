@@ -4,6 +4,7 @@ using Minesweeper.UI.ViewModels.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -37,13 +38,13 @@ namespace Minesweeper.UI.ViewModels
 
 			_gameProcess = new Process();
 			_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
-			_gameProcess.FieldCreated += GameProcess_FieldUpdated;
+			_gameProcess.FieldCreated += GameProcess_FieldCreated;
 			_gameProcess.CellOpenned += GameProcess_CellOpenned;
 			_gameProcess.MinesUpdated += GameProcess_MinesUpdated;
 			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
 		}
 
-		public event Action<int, int> FieldUpdated;
+		public event Action<int, int> FieldCreated;
 
 		public int FieldWidth
 		{
@@ -135,6 +136,9 @@ namespace Minesweeper.UI.ViewModels
 
 		public void Mark(TileViewModel tile)
 		{
+			if (tile.IsOpen)
+				return;
+
 			tile.IsMarked = !tile.IsMarked;
 			_gameProcess.Mark(tile.Row, tile.Column);
 
@@ -149,9 +153,6 @@ namespace Minesweeper.UI.ViewModels
 			switch (state)
 			{
 				case GameState.Undefined:
-					Execute.OnUIThread(RunDisableState);
-					break;
-				case GameState.Generating:
 					Execute.OnUIThread(RunDisableState);
 					break;
 				case GameState.Ready:
@@ -171,20 +172,30 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		private void GameProcess_FieldUpdated(int width, int height, int minesCount)
+		private void GameProcess_FieldCreated(int width, int height, int minesCount)
 		{
 			Execute.OnUIThread(() =>
 			{
 				FlagsCount = MinesCount;
-				FieldUpdated?.Invoke(width, height);
+				FieldCreated?.Invoke(width, height);
 			});
 		}
 
-		private void GameProcess_CellOpenned(int row, int column)
+		private void GameProcess_CellOpenned(IReadOnlyList<Point> listOpenned)
 		{
-			var item = _tiles.FirstOrDefault(x => x.Row == row && x.Column == column);
-			if (item != null)
-				Execute.OnUIThread(() => item.IsOpen = true);
+			var list = new List<TileViewModel>();
+
+			foreach (var point in listOpenned)
+			{
+				var tile = _tiles.First(x => x.Column == point.X && x.Row == point.Y);
+				list.Add(tile);
+			}
+
+			Execute.OnUIThread(() =>
+			{
+				foreach (var item in list)
+					item.IsOpen = true;
+			});
 		}
 
 		private void GameProcess_MinesUpdated()
@@ -257,13 +268,12 @@ namespace Minesweeper.UI.ViewModels
 			{
 				cell.IsTabStop = false;
 				cell.Command = null;
-				//cell.RightTapped -= CellButton_RightTapped;
 			}
 		}
 
 		private void RunFailedState()
 		{
-			_cells.Select(x => x.DataContext).OfType<TileViewModel>().Where(x => x.IsMined).ToList().ForEach(x => x.IsOpen = true);
+			_tiles.Where(x => x.IsMined).ToList().ForEach(x => x.IsOpen = true);
 
 			FieldBackground = _failedBackgroundBrush;
 			FieldIsActive = false;
@@ -271,7 +281,6 @@ namespace Minesweeper.UI.ViewModels
 			{
 				cell.IsTabStop = false;
 				cell.Command = null;
-				//cell.RightTapped -= CellButton_RightTapped;
 			}
 		}
 

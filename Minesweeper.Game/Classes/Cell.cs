@@ -7,9 +7,9 @@ namespace Minesweeper.Game.Classes
 	{
 		public Cell(int row, int column)
 		{
+			Neighbors = new List<Cell>();
 			Row = row;
 			Column = column;
-			Neighbors = new List<Cell>();
 		}
 
 		public int Column { get; }
@@ -26,6 +26,6 @@ namespace Minesweeper.Game.Classes
 
 		public List<Cell> Neighbors { get; }
 
-		public int Count => IsMined ? int.MaxValue : (Neighbors?.Count(x => x.IsMined) ?? 0);
+		public int Count => Neighbors.Count(x => x.IsMined);
 	}
 }
