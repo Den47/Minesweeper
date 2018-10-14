@@ -100,7 +100,7 @@ namespace Minesweeper.UI.ViewModels
 			get
 			{
 				if (IsMined)
-					return "Ж";
+					return string.Empty;
 
 				var count = Count;
 				return count == 0 ? string.Empty : count.ToString();

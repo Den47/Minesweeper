@@ -23,6 +23,14 @@
 				           FontSize="12"
 				           Text="{Binding Content}" />
 
+				<FontIcon HorizontalAlignment="Center"
+				          VerticalAlignment="Center"
+				          FontFamily="Segoe MDL2 Assets"
+				          FontSize="12"
+				          FontWeight="Bold"
+				          Glyph="&#xEDAD;"
+				          Visibility="{Binding IsMined, Converter={StaticResource BoolToVisibilityConverter}}" />
+
 				<Border Background="#FFDEDEDE" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
 
 				<FontIcon HorizontalAlignment="Center"
