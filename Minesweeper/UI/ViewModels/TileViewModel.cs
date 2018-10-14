@@ -1,4 +1,5 @@
 ﻿using Minesweeper.UI.Support;
+using Minesweeper.UI.ViewModels.Classes;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -7,6 +8,7 @@ namespace Minesweeper.UI.ViewModels
 {
 	public class TileViewModel : PropertyChangedBase
 	{
+		private Brush _visibleBackGround;
 		private int _count;
 		private bool _isOpen;
 		private bool _isMarked;
@@ -46,6 +48,10 @@ namespace Minesweeper.UI.ViewModels
 				if (_isOpen != value)
 				{
 					_isOpen = value;
+
+					if (value)
+						VisibleBackground = Background;
+
 					NotifyOfPropertyChange(nameof(IsOpen));
 					NotifyOfPropertyChange(nameof(IsMarkVisible));
 				}
@@ -79,6 +85,16 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
+		public Brush VisibleBackground
+		{
+			get => _visibleBackGround ?? FieldBrushes.BrushOpen;
+			set
+			{
+				_visibleBackGround = value;
+				NotifyOfPropertyChange(nameof(VisibleBackground));
+			}
+		}
+
 		public string Content
 		{
 			get
@@ -105,14 +121,14 @@ namespace Minesweeper.UI.ViewModels
 			IsOpen = false;
 			IsMarked = false;
 			Count = 0;
-			Background = null;
+			VisibleBackground = Background = null;
 		}
 
 		public void UpdateBindings()
 		{
 			NotifyOfPropertyChange(nameof(Count));
 			NotifyOfPropertyChange(nameof(Content));
-			NotifyOfPropertyChange(nameof(Background));
+			NotifyOfPropertyChange(nameof(VisibleBackground));
 		}
 
 		public override string ToString() => Content;

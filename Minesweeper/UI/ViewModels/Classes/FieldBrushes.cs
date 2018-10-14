@@ -26,5 +26,7 @@ namespace Minesweeper.UI.ViewModels.Classes
 		public static Brush BrushMined { get; } = new SolidColorBrush(Color.FromArgb(0xFF, 0xD6, 0x5D, 0x5D));
 
 		public static Brush BrushClose { get; } = new SolidColorBrush(Color.FromArgb(0xFF, 0xDE, 0xDE, 0xDE));
+
+		public static Brush BrushOpen { get; } = new SolidColorBrush(Colors.WhiteSmoke);
 	}
 }

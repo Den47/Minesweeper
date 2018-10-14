@@ -17,9 +17,7 @@
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:TileViewModel">
-			<Grid>
-				<Border Background="{Binding Background}" />
-
+			<Grid Background="{Binding VisibleBackground}">
 				<TextBlock HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
 				           FontSize="12"
@@ -41,8 +39,7 @@
 			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 			<Setter Property="VerticalContentAlignment" Value="Stretch" />
-			<Setter Property="BorderBrush" Value="#FFDEDEDE" />
-			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="BorderThickness" Value="0" />
 			<Setter Property="Margin" Value="1" />
 			<Setter Property="Padding" Value="0" />
 			<Setter Property="Height" Value="24" />
@@ -50,7 +47,7 @@
 			<Setter Property="ContentTemplate" Value="{StaticResource CellButtonTemplate}" />
 		</Style>
 
-		<Style TargetType="Slider">
+		<Style x:Key="SliderStyle" TargetType="Slider">
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
 			<Setter Property="Margin" Value="0,0,10,0" />
 			<Setter Property="FontSize" Value="12" />
@@ -78,6 +75,7 @@
 			        Header="Width"
 			        Maximum="40"
 			        Minimum="1"
+			        Style="{StaticResource SliderStyle}"
 			        Value="{Binding FieldWidth, Mode=TwoWay}" />
 
 			<Slider x:Name="HeightSlider"
@@ -85,6 +83,7 @@
 			        Header="Height"
 			        Maximum="20"
 			        Minimum="1"
+			        Style="{StaticResource SliderStyle}"
 			        Value="{Binding FieldHeight, Mode=TwoWay}" />
 
 			<Slider x:Name="MinesSlider"
@@ -92,6 +91,7 @@
 			        Header="Mines"
 			        Maximum="100"
 			        Minimum="0"
+			        Style="{StaticResource SliderStyle}"
 			        Value="{Binding MinesCount, Mode=TwoWay}" />
 
 			<StackPanel Grid.Column="4"
@@ -115,17 +115,15 @@
 			</Button>
 		</Grid>
 
-		<ScrollViewer Grid.Row="1"
-		              HorizontalAlignment="Stretch"
-		              VerticalAlignment="Stretch"
-		              HorizontalScrollBarVisibility="Auto"
-		              VerticalScrollBarVisibility="Auto">
+		<Viewbox Grid.Row="1"
+		         HorizontalAlignment="Stretch"
+		         VerticalAlignment="Stretch">
 			<Grid x:Name="field"
 			      Padding="1"
 			      HorizontalAlignment="Center"
 			      VerticalAlignment="Center"
 			      Background="{Binding FieldBackground}"
 			      IsHitTestVisible="{Binding FieldIsActive}" />
-		</ScrollViewer>
+		</Viewbox>
 	</Grid>
 </Page>
