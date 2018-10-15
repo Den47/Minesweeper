@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Game;
+using Minesweeper.Settings;
 using Minesweeper.UI.Support;
 using Minesweeper.UI.ViewModels.Classes;
 using System;
@@ -19,10 +20,10 @@ namespace Minesweeper.UI.ViewModels
 
 		private readonly Process _gameProcess;
 
-		private int _fieldWidth = 32;
-		private int _fieldHeight = 16;
-		private int _minesCount = 20;
-		private int _flagsCount = 20;
+		private int _fieldWidth;
+		private int _fieldHeight;
+		private int _minesCount;
+		private int _flagsCount;
 
 		private bool _fieldIsActive;
 
@@ -35,6 +36,10 @@ namespace Minesweeper.UI.ViewModels
 		{
 			RestartCommand = new RelayCommand(Restart);
 			OpenTileCommand = new RelayCommand<TileViewModel>(OpenTile);
+
+			FieldWidth = LocalSettings.Width;
+			FieldHeight = LocalSettings.Height;
+			FlagsCount = MinesCount = LocalSettings.MinesCount;
 
 			_gameProcess = new Process();
 			_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
@@ -54,6 +59,7 @@ namespace Minesweeper.UI.ViewModels
 				if (_fieldWidth != value)
 				{
 					_fieldWidth = value;
+					LocalSettings.Width = value;
 					NotifyOfPropertyChange(nameof(FieldWidth));
 				}
 			}
@@ -67,6 +73,7 @@ namespace Minesweeper.UI.ViewModels
 				if (_fieldHeight != value)
 				{
 					_fieldHeight = value;
+					LocalSettings.Height = value;
 					NotifyOfPropertyChange(nameof(FieldHeight));
 				}
 			}
@@ -80,6 +87,7 @@ namespace Minesweeper.UI.ViewModels
 				if (_minesCount != value)
 				{
 					_minesCount = value;
+					LocalSettings.MinesCount = value;
 					NotifyOfPropertyChange(nameof(MinesCount));
 				}
 			}
