@@ -1,5 +1,8 @@
 ﻿using Minesweeper.UI.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -9,7 +12,9 @@ namespace Minesweeper.UI.Views
 	public sealed partial class GameView
 	{
 		private List<Button> _cells;
-		private List<TileViewModel> _tiles;
+		private List<CellViewModel> _tiles;
+
+		private int _currentCellSize;
 
 		public GameView()
 		{
@@ -25,7 +30,7 @@ namespace Minesweeper.UI.Views
 				fieldChanged = true;
 				field.RowDefinitions.Clear();
 				for (int i = 0; i < height; i++)
-					field.RowDefinitions.Add(new RowDefinition());
+					field.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0, GridUnitType.Auto) });
 			}
 
 			if (field.ColumnDefinitions.Count != width)
@@ -33,7 +38,7 @@ namespace Minesweeper.UI.Views
 				fieldChanged = true;
 				field.ColumnDefinitions.Clear();
 				for (int i = 0; i < width; i++)
-					field.ColumnDefinitions.Add(new ColumnDefinition());
+					field.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
 			}
 
 			if (fieldChanged)
@@ -41,22 +46,24 @@ namespace Minesweeper.UI.Views
 				field.Children.Clear();
 
 				_cells = new List<Button>();
-				_tiles = new List<TileViewModel>();
+				_tiles = new List<CellViewModel>();
 
 				for (int i = 0; i < field.RowDefinitions.Count; i++)
 				{
 					for (int j = 0; j < field.ColumnDefinitions.Count; j++)
 					{
-						var tile = new TileViewModel(i, j);
+						var tile = new CellViewModel(i, j);
 
 						var button = new Button
 						{
 							DataContext = tile,
+							Height = _currentCellSize,
+							Width = _currentCellSize,
 							Style = CellButtonStyle
 						};
 
 						button.Command = ViewModel.OpenTileCommand;
-						button.CommandParameter = button.DataContext as TileViewModel;
+						button.CommandParameter = button.DataContext as CellViewModel;
 						button.RightTapped += CellButton_RightTapped;
 
 						Grid.SetRow(button, i);
@@ -81,11 +88,50 @@ namespace Minesweeper.UI.Views
 			}
 
 			ViewModel.SetCells(_cells, _tiles);
+
+			UpdateCellSize(viewBox.ActualWidth, viewBox.ActualHeight);
 		}
 
 		private void CellButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
 		{
-			ViewModel.Mark((TileViewModel)((FrameworkElement)sender).DataContext);
+			ViewModel.Mark((CellViewModel)((FrameworkElement)sender).DataContext);
+		}
+
+		private void SwitchViewButton_Click(object sender, RoutedEventArgs e)
+		{
+			settingsGrid.Opacity = settingsGrid.Opacity > 0d ? 0d : 1d;
+		}
+
+		private void ViewBox_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			UpdateCellSize(e.NewSize.Width, e.NewSize.Height);
+		}
+
+		private void UpdateCellSize(double width, double height)
+		{
+			if (_cells == null)
+				return;
+
+			var bounds = new Size(
+				width - field.Padding.Left - field.Padding.Right,
+				height - field.Padding.Top - field.Padding.Bottom);
+
+			var size = (int)Math.Min(bounds.Width / ViewModel.FieldWidth, bounds.Height / ViewModel.FieldHeight) - 2;
+			if (size == _currentCellSize)
+				return;
+
+			_currentCellSize = size;
+
+			// default cell size = 30
+			// default font size = 16
+			var fontSize = (int)((double)size / 30 * 16);
+			if (FontSize != fontSize)
+				FontSize = fontSize; // using FontSize for content bindings
+
+			foreach (var cell in _cells)
+			{
+				cell.Width = cell.Height = size;
+			}
 		}
 	}
 }

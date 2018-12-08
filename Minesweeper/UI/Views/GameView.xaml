@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Minesweeper.UI.ViewModels"
+      x:Name="Self"
       mc:Ignorable="d">
 
 	<Page.DataContext>
@@ -16,18 +17,17 @@
 
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
-		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:TileViewModel">
+		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:CellViewModel">
 			<Grid Background="{Binding VisibleBackground}">
 				<TextBlock HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
-				           FontSize="12"
+				           FontSize="{Binding FontSize, ElementName=Self}"
 				           Text="{Binding Content}" />
 
 				<FontIcon HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe MDL2 Assets"
-				          FontSize="12"
-				          FontWeight="Bold"
+				          FontSize="{Binding FontSize, ElementName=Self}"
 				          Glyph="&#xEDAD;"
 				          Visibility="{Binding IsMined, Converter={StaticResource BoolToVisibilityConverter}}" />
 
@@ -36,7 +36,7 @@
 				<FontIcon HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe UI Symbol"
-				          FontSize="12"
+				          FontSize="{Binding FontSize, ElementName=Self}"
 				          Glyph="{StaticResource FlagSymbol}"
 				          Visibility="{Binding IsMarkVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 			</Grid>
@@ -50,88 +50,116 @@
 			<Setter Property="BorderThickness" Value="0" />
 			<Setter Property="Margin" Value="1" />
 			<Setter Property="Padding" Value="0" />
-			<Setter Property="Height" Value="24" />
-			<Setter Property="Width" Value="24" />
+			<Setter Property="MinHeight" Value="0" />
+			<Setter Property="MinWidth" Value="0" />
 			<Setter Property="ContentTemplate" Value="{StaticResource CellButtonTemplate}" />
 		</Style>
 
 		<Style x:Key="SliderStyle" TargetType="Slider">
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="Margin" Value="0,0,10,0" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="Margin" Value="5,20,5,0" />
 			<Setter Property="FontSize" Value="12" />
+			<Setter Property="HeaderTemplate">
+				<Setter.Value>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="{Binding}" />
+							<TextBlock Margin="10,0,0,0" Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Value}" />
+						</StackPanel>
+					</DataTemplate>
+				</Setter.Value>
+			</Setter>
 		</Style>
 	</Page.Resources>
 
-	<Grid Padding="20" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-		</Grid.RowDefinitions>
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-		<Grid Margin="0,0,0,10">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="2*" MaxWidth="180" />
-				<ColumnDefinition Width="2*" MaxWidth="180" />
-				<ColumnDefinition Width="2*" MaxWidth="180" />
-				<ColumnDefinition Width="1*" />
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-
-			<Slider x:Name="WidthSlider"
-			        Grid.Column="0"
-			        Header="Width"
-			        Maximum="40"
-			        Minimum="1"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding FieldWidth, Mode=TwoWay}" />
-
-			<Slider x:Name="HeightSlider"
-			        Grid.Column="1"
-			        Header="Height"
-			        Maximum="20"
-			        Minimum="1"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding FieldHeight, Mode=TwoWay}" />
-
-			<Slider x:Name="MinesSlider"
-			        Grid.Column="2"
-			        Header="Mines"
-			        Maximum="100"
-			        Minimum="0"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding MinesCount, Mode=TwoWay}" />
-
-			<StackPanel Grid.Column="4"
-			            VerticalAlignment="Center"
-			            Orientation="Horizontal">
-				<FontIcon FontFamily="Segoe UI Symbol"
-				          FontSize="12"
-				          Glyph="{StaticResource FlagSymbol}" />
-				<TextBlock x:Name="FlagsCounterTextBlock"
-				           Margin="0,0,10,0"
-				           VerticalAlignment="Center"
-				           Text="{Binding FlagsCount}" />
-			</StackPanel>
-
-			<Button Grid.Column="5" Command="{Binding RestartCommand}">
-				<FontIcon HorizontalAlignment="Center"
-				          VerticalAlignment="Center"
-				          FontFamily="Segoe UI Symbol"
-				          FontSize="12"
-				          Glyph="&#xE117;" />
-			</Button>
-		</Grid>
-
-		<Viewbox Grid.Row="1"
-		         HorizontalAlignment="Stretch"
-		         VerticalAlignment="Stretch">
+		<Border x:Name="viewBox"
+		        Margin="10,10,10,36"
+		        SizeChanged="ViewBox_SizeChanged">
 			<Grid x:Name="field"
 			      Padding="1"
 			      HorizontalAlignment="Center"
 			      VerticalAlignment="Center"
 			      Background="{Binding FieldBackground}"
 			      IsHitTestVisible="{Binding FieldIsActive}" />
-		</Viewbox>
+		</Border>
+
+		<StackPanel Margin="10"
+		            HorizontalAlignment="Left"
+		            VerticalAlignment="Bottom"
+		            Orientation="Horizontal">
+			<FontIcon FontFamily="Segoe UI Symbol"
+			          FontSize="12"
+			          Glyph="{StaticResource FlagSymbol}" />
+			<TextBlock x:Name="FlagsCounterTextBlock"
+			           Margin="0,0,10,0"
+			           VerticalAlignment="Center"
+			           FontSize="14"
+			           Text="{Binding FlagsCount}" />
+		</StackPanel>
+
+		<Grid x:Name="settingsGrid" Visibility="{Binding IsMenuVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+			<Grid.Background>
+				<SolidColorBrush Opacity="0.4" Color="Black" />
+			</Grid.Background>
+
+			<Grid HorizontalAlignment="Stretch"
+			      VerticalAlignment="Top"
+			      Background="White">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+
+				<Slider x:Name="WidthSlider"
+				        Grid.Column="1"
+				        Header="Width"
+				        Maximum="40"
+				        Minimum="1"
+				        Style="{StaticResource SliderStyle}"
+				        Value="{Binding FieldWidth, Mode=TwoWay}" />
+
+				<Slider x:Name="HeightSlider"
+				        Grid.Column="2"
+				        Header="Height"
+				        Maximum="20"
+				        Minimum="1"
+				        Style="{StaticResource SliderStyle}"
+				        Value="{Binding FieldHeight, Mode=TwoWay}" />
+
+				<Slider x:Name="MinesSlider"
+				        Grid.Column="3"
+				        Header="Mines"
+				        Maximum="100"
+				        Minimum="0"
+				        Style="{StaticResource SliderStyle}"
+				        Value="{Binding MinesCount, Mode=TwoWay}" />
+			</Grid>
+
+			<Border HorizontalAlignment="Center"
+			        VerticalAlignment="Center"
+			        Background="White">
+				<Button Background="White" Command="{Binding RestartCommand}">
+					<FontIcon HorizontalAlignment="Center"
+					          VerticalAlignment="Center"
+					          FontFamily="Segoe UI Symbol"
+					          FontSize="24"
+					          Glyph="&#xE117;" />
+				</Button>
+			</Border>
+		</Grid>
+
+		<Button Margin="20"
+		        HorizontalAlignment="Center"
+		        VerticalAlignment="Bottom"
+		        Background="White"
+		        Click="SwitchViewButton_Click"
+		        Content="Switch View"
+		        Visibility="{Binding IsMenuVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
 	</Grid>
 </Page>

@@ -30,12 +30,12 @@ namespace Minesweeper.UI.ViewModels
 		private Brush _fieldBackground;
 
 		private List<Button> _cells;
-		private List<TileViewModel> _tiles;
+		private List<CellViewModel> _tiles;
 
 		public GameViewModel()
 		{
 			RestartCommand = new RelayCommand(Restart);
-			OpenTileCommand = new RelayCommand<TileViewModel>(OpenTile);
+			OpenTileCommand = new RelayCommand<CellViewModel>(OpenTile);
 
 			FieldWidth = LocalSettings.Width;
 			FieldHeight = LocalSettings.Height;
@@ -119,6 +119,8 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
+		public bool IsMenuVisible => _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
+
 		public Brush FieldBackground
 		{
 			get => _fieldBackground;
@@ -134,15 +136,15 @@ namespace Minesweeper.UI.ViewModels
 
 		public RelayCommand RestartCommand { get; }
 
-		public RelayCommand<TileViewModel> OpenTileCommand { get; }
+		public RelayCommand<CellViewModel> OpenTileCommand { get; }
 
-		public void SetCells(List<Button> buttons, List<TileViewModel> tiles)
+		public void SetCells(List<Button> buttons, List<CellViewModel> tiles)
 		{
 			_cells = buttons;
 			_tiles = tiles;
 		}
 
-		public void Mark(TileViewModel tile)
+		public void Mark(CellViewModel tile)
 		{
 			if (tile.IsOpen)
 				return;
@@ -178,6 +180,8 @@ namespace Minesweeper.UI.ViewModels
 				default:
 					break;
 			}
+
+			Execute.OnUIThread(() => NotifyOfPropertyChange(nameof(IsMenuVisible)));
 		}
 
 		private void GameProcess_FieldCreated(int width, int height, int minesCount)
@@ -191,7 +195,7 @@ namespace Minesweeper.UI.ViewModels
 
 		private void GameProcess_CellOpenned(IReadOnlyList<Point> listOpenned)
 		{
-			var list = new List<TileViewModel>();
+			var list = new List<CellViewModel>();
 
 			foreach (var point in listOpenned)
 			{
@@ -297,7 +301,7 @@ namespace Minesweeper.UI.ViewModels
 			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
 		}
 
-		private void OpenTile(TileViewModel tile)
+		private void OpenTile(CellViewModel tile)
 		{
 			_gameProcess.Open(tile.Row, tile.Column);
 		}
