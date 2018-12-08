@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Minesweeper.UI.ViewModels
 {
-	public class TileViewModel : PropertyChangedBase
+	public class CellViewModel : PropertyChangedBase
 	{
 		private Brush _visibleBackGround;
 		private int _count;
@@ -14,11 +14,11 @@ namespace Minesweeper.UI.ViewModels
 		private bool _isMarked;
 		private bool _isMined;
 
-		public TileViewModel(int row, int column)
+		public CellViewModel(int row, int column)
 		{
 			Row = row;
 			Column = column;
-			Cells = new List<TileViewModel>();
+			Cells = new List<CellViewModel>();
 		}
 
 		public int Column { get; }
@@ -102,8 +102,7 @@ namespace Minesweeper.UI.ViewModels
 				if (IsMined)
 					return string.Empty;
 
-				var count = Count;
-				return count == 0 ? string.Empty : count.ToString();
+				return Count == 0 ? string.Empty : Count.ToString();
 			}
 		}
 
@@ -111,7 +110,7 @@ namespace Minesweeper.UI.ViewModels
 
 		public Brush Background { get; set; }
 
-		public List<TileViewModel> Cells { get; private set; }
+		public List<CellViewModel> Cells { get; private set; }
 
 		public Button Button { get; set; }
 
