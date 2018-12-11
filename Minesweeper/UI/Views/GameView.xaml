@@ -16,24 +16,30 @@
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+		<converters:InverseBoolConverter x:Key="InverseBoolConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:CellViewModel">
-			<Grid Background="{Binding VisibleBackground}">
-				<TextBlock HorizontalAlignment="Center"
+			<Grid>
+				<Border Background="{Binding VisibleBackground}" />
+
+				<TextBlock Margin="2"
+				           HorizontalAlignment="Center"
 				           VerticalAlignment="Center"
 				           FontSize="{Binding FontSize, ElementName=Self}"
 				           Text="{Binding Content}" />
 
-				<FontIcon HorizontalAlignment="Center"
+				<FontIcon Margin="2"
+				          HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe MDL2 Assets"
 				          FontSize="{Binding FontSize, ElementName=Self}"
 				          Glyph="&#xEDAD;"
 				          Visibility="{Binding IsMined, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-				<Border Background="#FFDEDEDE" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
+				<Border Background="LightGray" Visibility="{Binding IsOpen, ConverterParameter=False, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-				<FontIcon HorizontalAlignment="Center"
+				<FontIcon Margin="2"
+				          HorizontalAlignment="Center"
 				          VerticalAlignment="Center"
 				          FontFamily="Segoe UI Symbol"
 				          FontSize="{Binding FontSize, ElementName=Self}"
@@ -48,6 +54,7 @@
 			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
 			<Setter Property="VerticalContentAlignment" Value="Stretch" />
 			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
 			<Setter Property="Margin" Value="1" />
 			<Setter Property="Padding" Value="0" />
 			<Setter Property="MinHeight" Value="0" />
@@ -60,23 +67,68 @@
 			<Setter Property="VerticalAlignment" Value="Top" />
 			<Setter Property="Margin" Value="5,20,5,0" />
 			<Setter Property="FontSize" Value="12" />
-			<Setter Property="HeaderTemplate">
-				<Setter.Value>
-					<DataTemplate>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="{Binding}" />
-							<TextBlock Margin="10,0,0,0" Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Value}" />
-						</StackPanel>
-					</DataTemplate>
-				</Setter.Value>
-			</Setter>
 		</Style>
 	</Page.Resources>
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="menuState">
+					<VisualState.StateTriggers>
+						<StateTrigger IsActive="{Binding IsMenuVisible}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="settingsGrid.Visibility" Value="Visible" />
+						<Setter Target="optionsGrid.Visibility" Value="Visible" />
+					</VisualState.Setters>
+					<VisualState.Storyboard>
+						<Storyboard>
+							<FadeInThemeAnimation BeginTime="0:0:2" Storyboard.TargetName="settingsGrid" />
+							<ObjectAnimationUsingKeyFrames BeginTime="0:0:2.2"
+							                               EnableDependentAnimation="True"
+							                               Storyboard.TargetName="restartButton"
+							                               Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+							</ObjectAnimationUsingKeyFrames>
+							<DoubleAnimation BeginTime="0:0:2"
+							                 EnableDependentAnimation="True"
+							                 Storyboard.TargetName="optionsGrid"
+							                 Storyboard.TargetProperty="Height"
+							                 From="0"
+							                 To="100"
+							                 Duration="0:0:0.1" />
+						</Storyboard>
+					</VisualState.Storyboard>
+				</VisualState>
+				<VisualState x:Name="gameState">
+					<VisualState.StateTriggers>
+						<StateTrigger IsActive="{Binding IsMenuVisible, Converter={StaticResource InverseBoolConverter}}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="restartButton.Visibility" Value="Collapsed" />
+					</VisualState.Setters>
+					<VisualState.Storyboard>
+						<Storyboard>
+							<FadeOutThemeAnimation SpeedRatio="0.5" Storyboard.TargetName="settingsGrid" />
+							<ObjectAnimationUsingKeyFrames BeginTime="0:0:2"
+							                               EnableDependentAnimation="True"
+							                               Storyboard.TargetName="settingsGrid"
+							                               Storyboard.TargetProperty="Visibility">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+							</ObjectAnimationUsingKeyFrames>
+						</Storyboard>
+					</VisualState.Storyboard>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
 
 		<Border x:Name="viewBox"
-		        Margin="10,10,10,36"
+		        Margin="10,10,10,0"
 		        SizeChanged="ViewBox_SizeChanged">
 			<Grid x:Name="field"
 			      Padding="1"
@@ -86,7 +138,8 @@
 			      IsHitTestVisible="{Binding FieldIsActive}" />
 		</Border>
 
-		<StackPanel Margin="10"
+		<StackPanel Grid.Row="1"
+		            Margin="10"
 		            HorizontalAlignment="Left"
 		            VerticalAlignment="Bottom"
 		            Orientation="Horizontal">
@@ -94,72 +147,74 @@
 			          FontSize="12"
 			          Glyph="{StaticResource FlagSymbol}" />
 			<TextBlock x:Name="FlagsCounterTextBlock"
-			           Margin="0,0,10,0"
 			           VerticalAlignment="Center"
 			           FontSize="14"
 			           Text="{Binding FlagsCount}" />
 		</StackPanel>
 
-		<Grid x:Name="settingsGrid" Visibility="{Binding IsMenuVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-			<Grid.Background>
-				<SolidColorBrush Opacity="0.4" Color="Black" />
-			</Grid.Background>
+		<Border x:Name="settingsGrid"
+		        Grid.RowSpan="2"
+		        Background="#90000000"
+		        Visibility="Collapsed" />
 
-			<Grid HorizontalAlignment="Stretch"
-			      VerticalAlignment="Top"
-			      Background="White">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition />
-					<ColumnDefinition />
-					<ColumnDefinition />
-					<ColumnDefinition />
-					<ColumnDefinition />
-				</Grid.ColumnDefinitions>
-
-				<Slider x:Name="WidthSlider"
-				        Grid.Column="1"
-				        Header="Width"
-				        Maximum="40"
-				        Minimum="1"
-				        Style="{StaticResource SliderStyle}"
-				        Value="{Binding FieldWidth, Mode=TwoWay}" />
-
-				<Slider x:Name="HeightSlider"
-				        Grid.Column="2"
-				        Header="Height"
-				        Maximum="20"
-				        Minimum="1"
-				        Style="{StaticResource SliderStyle}"
-				        Value="{Binding FieldHeight, Mode=TwoWay}" />
-
-				<Slider x:Name="MinesSlider"
-				        Grid.Column="3"
-				        Header="Mines"
-				        Maximum="100"
-				        Minimum="0"
-				        Style="{StaticResource SliderStyle}"
-				        Value="{Binding MinesCount, Mode=TwoWay}" />
-			</Grid>
-
-			<Border HorizontalAlignment="Center"
-			        VerticalAlignment="Center"
-			        Background="White">
-				<Button Background="White" Command="{Binding RestartCommand}">
-					<FontIcon HorizontalAlignment="Center"
-					          VerticalAlignment="Center"
-					          FontFamily="Segoe UI Symbol"
-					          FontSize="24"
-					          Glyph="&#xE117;" />
-				</Button>
-			</Border>
+		<Grid x:Name="optionsGrid"
+		      Height="0"
+		      HorizontalAlignment="Stretch"
+		      VerticalAlignment="Top"
+		      Background="White"
+		      Visibility="Collapsed">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition />
+				<ColumnDefinition />
+				<ColumnDefinition />
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+			<Slider x:Name="widthSlider"
+			        Grid.Column="1"
+			        Header="Width"
+			        Maximum="40"
+			        Minimum="1"
+			        Style="{StaticResource SliderStyle}"
+			        Value="{Binding FieldWidth, Mode=TwoWay}" />
+			<Slider x:Name="heightSlider"
+			        Grid.Column="2"
+			        Header="Height"
+			        Maximum="20"
+			        Minimum="1"
+			        Style="{StaticResource SliderStyle}"
+			        Value="{Binding FieldHeight, Mode=TwoWay}" />
+			<Slider x:Name="minesSlider"
+			        Grid.Column="3"
+			        Header="Mines"
+			        Maximum="100"
+			        Minimum="0"
+			        Style="{StaticResource SliderStyle}"
+			        Value="{Binding MinesCount, Mode=TwoWay}" />
 		</Grid>
 
-		<Button Margin="20"
+		<Border x:Name="restartButton"
 		        HorizontalAlignment="Center"
-		        VerticalAlignment="Bottom"
+		        VerticalAlignment="Center"
 		        Background="White"
-		        Click="SwitchViewButton_Click"
-		        Content="Switch View"
-		        Visibility="{Binding IsMenuVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
+		        Visibility="Collapsed">
+			<Button Background="White" Command="{Binding RestartCommand}">
+				<FontIcon HorizontalAlignment="Center"
+				          VerticalAlignment="Center"
+				          FontFamily="Segoe UI Symbol"
+				          FontSize="24"
+				          Glyph="&#xE117;" />
+			</Button>
+		</Border>
+
+		<Button x:Name="changeViewButton"
+		        Grid.Row="1"
+		        Margin="0"
+		        Padding="8,4"
+		        HorizontalAlignment="Center"
+		        VerticalAlignment="Center"
+		        Background="White"
+		        Click="ChangeViewButton_Click"
+		        Content="Change View" />
 	</Grid>
 </Page>

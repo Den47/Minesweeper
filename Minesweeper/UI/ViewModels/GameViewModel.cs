@@ -26,6 +26,7 @@ namespace Minesweeper.UI.ViewModels
 		private int _flagsCount;
 
 		private bool _fieldIsActive;
+		private bool _isMenuVisible;
 
 		private Brush _fieldBackground;
 
@@ -119,7 +120,18 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		public bool IsMenuVisible => _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
+		public bool IsMenuVisible
+		{
+			get => _isMenuVisible;
+			set
+			{
+				if (_isMenuVisible != value)
+				{
+					_isMenuVisible = value;
+					NotifyOfPropertyChange(nameof(IsMenuVisible));
+				}
+			}
+		}
 
 		public Brush FieldBackground
 		{
@@ -181,7 +193,10 @@ namespace Minesweeper.UI.ViewModels
 					break;
 			}
 
-			Execute.OnUIThread(() => NotifyOfPropertyChange(nameof(IsMenuVisible)));
+			Execute.OnUIThread(() =>
+			{
+				IsMenuVisible = _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
+			});
 		}
 
 		private void GameProcess_FieldCreated(int width, int height, int minesCount)

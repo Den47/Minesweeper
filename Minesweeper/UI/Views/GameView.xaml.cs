@@ -1,7 +1,6 @@
 ﻿using Minesweeper.UI.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -97,9 +96,12 @@ namespace Minesweeper.UI.Views
 			ViewModel.Mark((CellViewModel)((FrameworkElement)sender).DataContext);
 		}
 
-		private void SwitchViewButton_Click(object sender, RoutedEventArgs e)
+		private void ChangeViewButton_Click(object sender, RoutedEventArgs e)
 		{
-			settingsGrid.Opacity = settingsGrid.Opacity > 0d ? 0d : 1d;
+			settingsGrid.Visibility = settingsGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+			restartButton.Visibility = restartButton.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+			optionsGrid.Visibility = optionsGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+			optionsGrid.Height = optionsGrid.ActualHeight > 0 ? 0 : 100;
 		}
 
 		private void ViewBox_SizeChanged(object sender, SizeChangedEventArgs e)
