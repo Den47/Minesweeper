@@ -16,7 +16,6 @@
 		<x:String x:Key="FlagSymbol">&#xE129;</x:String>
 
 		<converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-		<converters:InverseBoolConverter x:Key="InverseBoolConverter" />
 
 		<DataTemplate x:Key="CellButtonTemplate" x:DataType="viewModels:CellViewModel">
 			<Grid>
@@ -61,63 +60,18 @@
 			<Setter Property="MinWidth" Value="0" />
 			<Setter Property="ContentTemplate" Value="{StaticResource CellButtonTemplate}" />
 		</Style>
-
-		<Style x:Key="SliderStyle" TargetType="Slider">
-			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="VerticalAlignment" Value="Top" />
-			<Setter Property="Margin" Value="5,20,5,0" />
-			<Setter Property="FontSize" Value="12" />
-		</Style>
 	</Page.Resources>
 
 	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup>
+			<VisualStateGroup CurrentStateChanged="VisualStateGroup_CurrentStateChanged">
 				<VisualState x:Name="menuState">
 					<VisualState.StateTriggers>
 						<StateTrigger IsActive="{Binding IsMenuVisible}" />
 					</VisualState.StateTriggers>
 					<VisualState.Setters>
-						<Setter Target="settingsGrid.Visibility" Value="Visible" />
-						<Setter Target="optionsGrid.Visibility" Value="Visible" />
+						<Setter Target="frame.Visibility" Value="Visible" />
 					</VisualState.Setters>
-					<VisualState.Storyboard>
-						<Storyboard>
-							<FadeInThemeAnimation BeginTime="0:0:2" Storyboard.TargetName="settingsGrid" />
-							<ObjectAnimationUsingKeyFrames BeginTime="0:0:2.2"
-							                               EnableDependentAnimation="True"
-							                               Storyboard.TargetName="restartButton"
-							                               Storyboard.TargetProperty="Visibility">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-							</ObjectAnimationUsingKeyFrames>
-							<DoubleAnimation BeginTime="0:0:2"
-							                 EnableDependentAnimation="True"
-							                 Storyboard.TargetName="optionsGrid"
-							                 Storyboard.TargetProperty="Height"
-							                 From="0"
-							                 To="100"
-							                 Duration="0:0:0.1" />
-						</Storyboard>
-					</VisualState.Storyboard>
-				</VisualState>
-				<VisualState x:Name="gameState">
-					<VisualState.StateTriggers>
-						<StateTrigger IsActive="{Binding IsMenuVisible, Converter={StaticResource InverseBoolConverter}}" />
-					</VisualState.StateTriggers>
-					<VisualState.Setters>
-						<Setter Target="restartButton.Visibility" Value="Collapsed" />
-					</VisualState.Setters>
-					<VisualState.Storyboard>
-						<Storyboard>
-							<FadeOutThemeAnimation SpeedRatio="0.5" Storyboard.TargetName="settingsGrid" />
-							<ObjectAnimationUsingKeyFrames BeginTime="0:0:2"
-							                               EnableDependentAnimation="True"
-							                               Storyboard.TargetName="settingsGrid"
-							                               Storyboard.TargetProperty="Visibility">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
-							</ObjectAnimationUsingKeyFrames>
-						</Storyboard>
-					</VisualState.Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
@@ -134,8 +88,7 @@
 			      Padding="1"
 			      HorizontalAlignment="Center"
 			      VerticalAlignment="Center"
-			      Background="{Binding FieldBackground}"
-			      IsHitTestVisible="{Binding FieldIsActive}" />
+			      Background="{Binding FieldBackground}" />
 		</Border>
 
 		<StackPanel Grid.Row="1"
@@ -146,75 +99,13 @@
 			<FontIcon FontFamily="Segoe UI Symbol"
 			          FontSize="12"
 			          Glyph="{StaticResource FlagSymbol}" />
-			<TextBlock x:Name="FlagsCounterTextBlock"
-			           VerticalAlignment="Center"
+			<TextBlock VerticalAlignment="Center"
 			           FontSize="14"
 			           Text="{Binding FlagsCount}" />
 		</StackPanel>
 
-		<Border x:Name="settingsGrid"
-		        Grid.RowSpan="2"
-		        Background="#90000000"
-		        Visibility="Collapsed" />
-
-		<Grid x:Name="optionsGrid"
-		      Height="0"
-		      HorizontalAlignment="Stretch"
-		      VerticalAlignment="Top"
-		      Background="White"
-		      Visibility="Collapsed">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition />
-				<ColumnDefinition />
-				<ColumnDefinition />
-				<ColumnDefinition />
-			</Grid.ColumnDefinitions>
-			<Slider x:Name="widthSlider"
-			        Grid.Column="1"
-			        Header="Width"
-			        Maximum="40"
-			        Minimum="1"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding FieldWidth, Mode=TwoWay}" />
-			<Slider x:Name="heightSlider"
-			        Grid.Column="2"
-			        Header="Height"
-			        Maximum="20"
-			        Minimum="1"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding FieldHeight, Mode=TwoWay}" />
-			<Slider x:Name="minesSlider"
-			        Grid.Column="3"
-			        Header="Mines"
-			        Maximum="100"
-			        Minimum="0"
-			        Style="{StaticResource SliderStyle}"
-			        Value="{Binding MinesCount, Mode=TwoWay}" />
-		</Grid>
-
-		<Border x:Name="restartButton"
-		        HorizontalAlignment="Center"
-		        VerticalAlignment="Center"
-		        Background="White"
-		        Visibility="Collapsed">
-			<Button Background="White" Command="{Binding RestartCommand}">
-				<FontIcon HorizontalAlignment="Center"
-				          VerticalAlignment="Center"
-				          FontFamily="Segoe UI Symbol"
-				          FontSize="24"
-				          Glyph="&#xE117;" />
-			</Button>
-		</Border>
-
-		<Button x:Name="changeViewButton"
-		        Grid.Row="1"
-		        Margin="0"
-		        Padding="8,4"
-		        HorizontalAlignment="Center"
-		        VerticalAlignment="Center"
-		        Background="White"
-		        Click="ChangeViewButton_Click"
-		        Content="Change View" />
+		<Frame x:Name="frame"
+		       Grid.RowSpan="2"
+		       Visibility="Collapsed" />
 	</Grid>
 </Page>

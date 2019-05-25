@@ -1,10 +1,12 @@
 ﻿using Minesweeper.UI.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Minesweeper.UI.Views
 {
@@ -96,14 +98,6 @@ namespace Minesweeper.UI.Views
 			ViewModel.Mark((CellViewModel)((FrameworkElement)sender).DataContext);
 		}
 
-		private void ChangeViewButton_Click(object sender, RoutedEventArgs e)
-		{
-			settingsGrid.Visibility = settingsGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-			restartButton.Visibility = restartButton.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-			optionsGrid.Visibility = optionsGrid.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-			optionsGrid.Height = optionsGrid.ActualHeight > 0 ? 0 : 100;
-		}
-
 		private void ViewBox_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			UpdateCellSize(e.NewSize.Width, e.NewSize.Height);
@@ -128,12 +122,53 @@ namespace Minesweeper.UI.Views
 			// default font size = 16
 			var fontSize = (int)((double)size / 30 * 16);
 			if (FontSize != fontSize)
-				FontSize = fontSize; // using FontSize for content bindings
+				FontSize = fontSize;
 
 			foreach (var cell in _cells)
 			{
 				cell.Width = cell.Height = size;
 			}
 		}
+
+		private async void VisualStateGroup_CurrentStateChanged(object sender, VisualStateChangedEventArgs e)
+		{
+			if (e.NewState == menuState)
+			{
+				ViewModel.LockMenu(true);
+				await Task.Delay(1000);
+				NavigateToMenu();
+			}
+		}
+
+		private void NavigateToMenu()
+		{
+			var parameter = new GameNavigationParameter();
+			parameter.StartCallback = () => RestartGame(parameter);
+			parameter.CloseCallback = () => ClearFrame();
+			frame.Navigate(typeof(GameMenuView), parameter);
+		}
+
+		private void RestartGame(GameNavigationParameter payload)
+		{
+			ViewModel.FieldWidth = payload.Width;
+			ViewModel.FieldHeight = payload.Height;
+			ViewModel.MinesCount = payload.Mines;
+			ViewModel.Restart();
+		}
+
+		private void ClearFrame()
+		{
+			ViewModel.LockMenu(false);
+			frame.Content = null;
+		}
+	}
+
+	internal class GameNavigationParameter
+	{
+		public Action StartCallback { get; set; }
+		public Action CloseCallback { get; set; }
+		public int Width { get; set; }
+		public int Height { get; set; }
+		public int Mines { get; set; }
 	}
 }

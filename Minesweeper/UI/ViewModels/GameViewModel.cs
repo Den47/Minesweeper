@@ -26,7 +26,7 @@ namespace Minesweeper.UI.ViewModels
 		private int _flagsCount;
 
 		private bool _fieldIsActive;
-		private bool _isMenuVisible;
+		private bool _showMenuForce;
 
 		private Brush _fieldBackground;
 
@@ -120,18 +120,7 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		public bool IsMenuVisible
-		{
-			get => _isMenuVisible;
-			set
-			{
-				if (_isMenuVisible != value)
-				{
-					_isMenuVisible = value;
-					NotifyOfPropertyChange(nameof(IsMenuVisible));
-				}
-			}
-		}
+		public bool IsMenuVisible => _showMenuForce || _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
 
 		public Brush FieldBackground
 		{
@@ -162,12 +151,27 @@ namespace Minesweeper.UI.ViewModels
 				return;
 
 			tile.IsMarked = !tile.IsMarked;
-			_gameProcess.Mark(tile.Row, tile.Column);
+			_gameProcess.MarkWithFlag(tile.Row, tile.Column);
 
 			if (tile.IsMarked)
 				FlagsCount--;
 			else
 				FlagsCount++;
+		}
+
+		public void Restart()
+		{
+			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
+		}
+
+		public void LockMenu(bool isVisible)
+		{
+			_showMenuForce = isVisible;
+
+			Execute.OnUIThread(() =>
+			{
+				NotifyOfPropertyChange(nameof(IsMenuVisible));
+			});
 		}
 
 		private void GameProcess_GameStateChanged(GameState state)
@@ -195,7 +199,7 @@ namespace Minesweeper.UI.ViewModels
 
 			Execute.OnUIThread(() =>
 			{
-				IsMenuVisible = _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
+				NotifyOfPropertyChange(nameof(IsMenuVisible));
 			});
 		}
 
@@ -231,7 +235,7 @@ namespace Minesweeper.UI.ViewModels
 			{
 				foreach (var item in _tiles)
 				{
-					var count = _gameProcess.GetCount(item.Row, item.Column);
+					var count = _gameProcess.GetMinesCount(item.Row, item.Column);
 					switch (count)
 					{
 						case 0:
@@ -309,11 +313,6 @@ namespace Minesweeper.UI.ViewModels
 				cell.IsTabStop = false;
 				cell.Command = null;
 			}
-		}
-
-		private void Restart()
-		{
-			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
 		}
 
 		private void OpenTile(CellViewModel tile)
