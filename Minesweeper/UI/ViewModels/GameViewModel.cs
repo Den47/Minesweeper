@@ -43,11 +43,11 @@ namespace Minesweeper.UI.ViewModels
 			FlagsCount = MinesCount = LocalSettings.MinesCount;
 
 			_gameProcess = new Process();
-			_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
-			_gameProcess.FieldCreated += GameProcess_FieldCreated;
-			_gameProcess.CellOpenned += GameProcess_CellOpenned;
-			_gameProcess.MinesUpdated += GameProcess_MinesUpdated;
-			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
+			//_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
+			//_gameProcess.FieldCreated += GameProcess_FieldCreated;
+			//_gameProcess.CellOpenned += GameProcess_CellOpenned;
+			//_gameProcess.MinesUpdated += GameProcess_MinesUpdated;
+			//_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
 		}
 
 		public event Action<int, int> FieldCreated;
@@ -159,9 +159,9 @@ namespace Minesweeper.UI.ViewModels
 				FlagsCount++;
 		}
 
-		public void Restart()
+		public async void Restart()
 		{
-			_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
+			await _gameProcess.StartAsync(FieldWidth, FieldHeight, MinesCount, 0, 0);
 		}
 
 		public void LockMenu(bool isVisible)
@@ -235,7 +235,7 @@ namespace Minesweeper.UI.ViewModels
 			{
 				foreach (var item in _tiles)
 				{
-					var count = _gameProcess.GetMinesCount(item.Row, item.Column);
+					var count = item.Count; //_gameProcess.GetMinesCount(item.Row, item.Column);
 					switch (count)
 					{
 						case 0:
@@ -267,7 +267,7 @@ namespace Minesweeper.UI.ViewModels
 							break;
 					}
 
-					item.IsMined = _gameProcess.IsMined(item.Row, item.Column);
+					//item.IsMined = _gameProcess.IsMined(item.Row, item.Column);
 
 					item.Count = count;
 
@@ -315,9 +315,9 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		private void OpenTile(CellViewModel tile)
+		private async void OpenTile(CellViewModel tile)
 		{
-			_gameProcess.Open(tile.Row, tile.Column);
+			await _gameProcess.OpenAsync(tile.Row, tile.Column);
 		}
 	}
 }

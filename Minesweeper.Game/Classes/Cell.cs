@@ -24,8 +24,14 @@ namespace Minesweeper.Game.Classes
 
 		public bool IsMarked { get; set; }
 
-		public List<Cell> Neighbors { get; }
+		public IReadOnlyList<Cell> Neighbors { get; private set; }
 
-		public int Count => Neighbors.Count(x => x.IsMined);
+		public int Count { get; private set; }
+
+		public void UpdateNeighbors(IEnumerable<Cell> cells)
+		{
+			Neighbors = new List<Cell>(cells);
+			Count = Neighbors.Count(x => x.IsMined);
+		}
 	}
 }
