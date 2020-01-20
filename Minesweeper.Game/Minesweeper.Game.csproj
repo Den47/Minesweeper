@@ -11,8 +11,8 @@
     <AssemblyName>Minesweeper.Game</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -106,11 +106,16 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Classes\Cell.cs" />
-    <Compile Include="Classes\Field.cs" />
+    <Compile Include="Internal\Cell.cs" />
+    <Compile Include="Internal\Field.cs" />
+    <Compile Include="Internal\Address.cs" />
+    <Compile Include="Internal\GameLogic.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="Internal\Options.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\CellResult.cs" />
+    <Compile Include="Public\OpenResult.cs" />
     <EmbeddedResource Include="Properties\Minesweeper.Game.rd.xml" />
   </ItemGroup>
   <ItemGroup>
