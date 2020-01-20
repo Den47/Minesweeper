@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Game;
+using Minesweeper.Game.DTO;
 using Minesweeper.Settings;
 using Minesweeper.UI.Support;
 using Minesweeper.UI.ViewModels.Classes;
@@ -19,6 +20,8 @@ namespace Minesweeper.UI.ViewModels
 		private readonly Brush _failedBackgroundBrush = new SolidColorBrush(Colors.PaleVioletRed);
 
 		private readonly Process _gameProcess;
+
+		private GameState _gameState;
 
 		private int _fieldWidth;
 		private int _fieldHeight;
@@ -43,11 +46,8 @@ namespace Minesweeper.UI.ViewModels
 			FlagsCount = MinesCount = LocalSettings.MinesCount;
 
 			_gameProcess = new Process();
-			//_gameProcess.GameStateChanged += GameProcess_GameStateChanged;
-			//_gameProcess.FieldCreated += GameProcess_FieldCreated;
-			//_gameProcess.CellOpenned += GameProcess_CellOpenned;
-			//_gameProcess.MinesUpdated += GameProcess_MinesUpdated;
-			//_gameProcess.Restart(FieldWidth, FieldHeight, MinesCount);
+
+			Restart();
 		}
 
 		public event Action<int, int> FieldCreated;
@@ -120,7 +120,7 @@ namespace Minesweeper.UI.ViewModels
 			}
 		}
 
-		public bool IsMenuVisible => _showMenuForce || _gameProcess.GameState == GameState.Failed || _gameProcess.GameState == GameState.Success;
+		public bool IsMenuVisible => _showMenuForce || _gameProcess.CurrentGameState == GameState.Failed || _gameProcess.CurrentGameState == GameState.Success;
 
 		public Brush FieldBackground
 		{
@@ -159,9 +159,11 @@ namespace Minesweeper.UI.ViewModels
 				FlagsCount++;
 		}
 
-		public async void Restart()
+		public void Restart()
 		{
-			await _gameProcess.StartAsync(FieldWidth, FieldHeight, MinesCount, 0, 0);
+			GameProcess_GameStateChanged(GameState.Ready);
+			FlagsCount = MinesCount;
+			FieldCreated?.Invoke(FieldWidth, FieldHeight);
 		}
 
 		public void LockMenu(bool isVisible)
@@ -176,6 +178,11 @@ namespace Minesweeper.UI.ViewModels
 
 		private void GameProcess_GameStateChanged(GameState state)
 		{
+			if (_gameState == state)
+				return;
+
+			_gameState = state;
+
 			switch (state)
 			{
 				case GameState.Undefined:
@@ -203,40 +210,24 @@ namespace Minesweeper.UI.ViewModels
 			});
 		}
 
-		private void GameProcess_FieldCreated(int width, int height, int minesCount)
+		private void GameProcess_MinesUpdated(CellDto cell)
 		{
-			Execute.OnUIThread(() =>
-			{
-				FlagsCount = MinesCount;
-				FieldCreated?.Invoke(width, height);
-			});
-		}
-
-		private void GameProcess_CellOpenned(IReadOnlyList<Point> listOpenned)
-		{
-			var list = new List<CellViewModel>();
-
-			foreach (var point in listOpenned)
-			{
-				var tile = _tiles.First(x => x.Column == point.X && x.Row == point.Y);
-				list.Add(tile);
-			}
+			var item = _tiles.FirstOrDefault(x => x.Column == cell.Column && x.Row == cell.Row);
+			if (item == null)
+				return;
 
 			Execute.OnUIThread(() =>
 			{
-				foreach (var item in list)
-					item.IsOpen = true;
-			});
-		}
+				item.IsMined = cell.IsMined;
+				item.Count = cell.Count;
 
-		private void GameProcess_MinesUpdated()
-		{
-			Execute.OnUIThread(() =>
-			{
-				foreach (var item in _tiles)
+				if (item.IsMined)
 				{
-					var count = item.Count; //_gameProcess.GetMinesCount(item.Row, item.Column);
-					switch (count)
+					item.Background = FieldBrushes.BrushMined;
+				}
+				else
+				{
+					switch (item.Count)
 					{
 						case 0:
 							item.Background = FieldBrushes.Brush0;
@@ -266,16 +257,9 @@ namespace Minesweeper.UI.ViewModels
 							item.Background = FieldBrushes.Brush8;
 							break;
 					}
-
-					//item.IsMined = _gameProcess.IsMined(item.Row, item.Column);
-
-					item.Count = count;
-
-					if (item.IsMined)
-						item.Background = FieldBrushes.BrushMined;
-
-					item.UpdateBindings();
 				}
+
+				item.UpdateBindings();
 			});
 		}
 
@@ -317,7 +301,33 @@ namespace Minesweeper.UI.ViewModels
 
 		private async void OpenTile(CellViewModel tile)
 		{
-			await _gameProcess.OpenAsync(tile.Row, tile.Column);
+			OpenResultDto response;
+
+			if (_gameState == GameState.Ready)
+				response = await _gameProcess.StartAsync(FieldWidth, FieldHeight, MinesCount, tile.Row, tile.Column);
+			else
+				response = await _gameProcess.OpenAsync(tile.Row, tile.Column);
+
+			GameProcess_GameStateChanged(response.State);
+
+			if (response.OpennedCells != null)
+			{
+				var list = new List<CellViewModel>();
+
+				foreach (var item in response.OpennedCells)
+				{
+					tile = _tiles.First(x => x.Column == item.Column && x.Row == item.Row);
+					list.Add(tile);
+
+					GameProcess_MinesUpdated(item);
+				}
+
+				Execute.OnUIThread(() =>
+				{
+					foreach (var item in list)
+						item.IsOpen = true;
+				});
+			}
 		}
 	}
 }

@@ -161,6 +161,15 @@ namespace Minesweeper.UI.Views
 			ViewModel.LockMenu(false);
 			frame.Content = null;
 		}
+
+		private void Self_Loaded(object sender, RoutedEventArgs e)
+		{
+			Loaded -= Self_Loaded;
+
+			ViewModel_FieldCreated(ViewModel.FieldWidth, ViewModel.FieldHeight);
+
+			ViewModel.FieldCreated += ViewModel_FieldCreated;
+		}
 	}
 
 	internal class GameNavigationParameter

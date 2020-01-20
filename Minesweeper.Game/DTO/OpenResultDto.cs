@@ -4,14 +4,16 @@ namespace Minesweeper.Game.DTO
 {
 	public class OpenResultDto
 	{
-		public OpenResultDto(GameState state, IEnumerable<AddressDto> opennedAddresses)
+		public OpenResultDto(GameState state, IEnumerable<CellDto> opennedCells)
 		{
 			State = state;
-			OpennedAddresses = new List<AddressDto>(opennedAddresses);
+
+			if (opennedCells != null)
+				OpennedCells = new List<CellDto>(opennedCells);
 		}
 
 		public GameState State { get; }
 
-		public IEnumerable<AddressDto> OpennedAddresses { get; }
+		public IEnumerable<CellDto> OpennedCells { get; }
 	}
 }

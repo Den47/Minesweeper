@@ -42,7 +42,7 @@ namespace Minesweeper.Game.Internal
 
 		public bool IsInRange(int row, int column)
 		{
-			return column >= MIN_WIDTH && column <= Width && row >= MIN_HEIGHT && row <= Height;
+			return column >= 0 && column <= Width && row >= 0 && row <= Height;
 		}
 	}
 }

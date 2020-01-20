@@ -1,22 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Minesweeper.Game.Classes
+namespace Minesweeper.Game.Internal
 {
-	internal class Cell
+	internal class Cell : CellBase
 	{
-		public Cell(int row, int column)
+		public Cell(int row, int column) : base(row, column)
 		{
 			Neighbors = new List<Cell>();
-			Row = row;
-			Column = column;
 		}
-
-		public int Column { get; }
-
-		public int Row { get; }
-
-		public bool IsMined { get; set; }
 
 		public bool IsOpen { get; set; }
 
@@ -26,12 +18,11 @@ namespace Minesweeper.Game.Classes
 
 		public IReadOnlyList<Cell> Neighbors { get; private set; }
 
-		public int Count { get; private set; }
+		public override int Count => Neighbors.Count(x => x.IsMined);
 
 		public void UpdateNeighbors(IEnumerable<Cell> cells)
 		{
 			Neighbors = new List<Cell>(cells);
-			Count = Neighbors.Count(x => x.IsMined);
 		}
 	}
 }

@@ -2,17 +2,20 @@
 {
 	public class CellDto
 	{
-		public CellDto(int column, int row, int value)
+		public CellDto(int row, int column, int count, bool isMined)
 		{
-			Column = column;
 			Row = row;
-			Value = value;
+			Column = column;
+			Count = count;
+			IsMined = isMined;
 		}
 
 		public int Column { get; }
 
 		public int Row { get; }
 
-		public int Value { get; }
+		public int Count { get; }
+
+		public bool IsMined { get; }
 	}
 }

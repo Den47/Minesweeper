@@ -14,7 +14,7 @@ namespace Minesweeper.Game
 		{
 		}
 
-		public GameState GameState => _currentGame?.State ?? GameState.Undefined;
+		public GameState CurrentGameState => _currentGame?.State ?? GameState.Undefined;
 
 		/// <summary>
 		/// Creates a new game and opens the first cell
@@ -26,7 +26,7 @@ namespace Minesweeper.Game
 			if (!options.IsInRange(firstClickRow, firstClickColumn))
 				throw new ArgumentOutOfRangeException("firstClickAddress");
 
-			var address = new Address(firstClickColumn, firstClickRow);
+			var address = new Address(firstClickRow, firstClickColumn);
 
 			_currentGame = GameLogic.CreateNewGame(options, address);
 
@@ -38,8 +38,8 @@ namespace Minesweeper.Game
 		/// </summary>
 		public Task<OpenResultDto> OpenAsync(int row, int column)
 		{
-			var result = _currentGame.Open(row, column);
-			var list = result.Item2.Select(x => new AddressDto(x.Column, x.Row));
+			var result = _currentGame.OpenCell(row, column);
+			var list = result.Item2?.Select(x => new CellDto(x.Row, x.Column, x.Count, x.IsMined));
 			return Task.FromResult(new OpenResultDto(result.Item1, list));
 		}
 

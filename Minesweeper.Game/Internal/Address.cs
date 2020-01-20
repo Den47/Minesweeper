@@ -2,10 +2,10 @@
 {
 	internal class Address
 	{
-		public Address(int column, int row)
+		public Address(int row, int column)
 		{
-			Column = column;
 			Row = row;
+			Column = column;
 		}
 
 		public int Column { get; }

@@ -5,11 +5,12 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:Minesweeper.UI.ViewModels"
+      Loaded="Self_Loaded"
       x:Name="Self"
       mc:Ignorable="d">
 
 	<Page.DataContext>
-		<viewModels:GameViewModel x:Name="ViewModel" FieldCreated="ViewModel_FieldCreated" />
+		<viewModels:GameViewModel x:Name="ViewModel" />
 	</Page.DataContext>
 
 	<Page.Resources>
