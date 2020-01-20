@@ -1,8 +1,8 @@
-﻿namespace Minesweeper.Game.DTO
+﻿namespace Minesweeper.Game.Public
 {
-	public class CellDto
+	public class CellResult
 	{
-		public CellDto(int row, int column, int count, bool isMined)
+		internal CellResult(int row, int column, int count, bool isMined)
 		{
 			Row = row;
 			Column = column;
@@ -16,6 +16,6 @@
 
 		public int Count { get; }
 
-		public bool IsMined { get; }
+		public bool IsMined { get; set; }
 	}
 }

@@ -1,5 +1,5 @@
-﻿using Minesweeper.Game.DTO;
-using Minesweeper.Game.Internal;
+﻿using Minesweeper.Game.Internal;
+using Minesweeper.Game.Public;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ namespace Minesweeper.Game
 		/// <summary>
 		/// Creates a new game and opens the first cell
 		/// </summary>
-		public Task<OpenResultDto> StartAsync(int width, int height, int minesCount, int firstClickRow, int firstClickColumn)
+		public Task<OpenResult> StartAsync(int width, int height, int minesCount, int firstClickRow, int firstClickColumn)
 		{
 			var options = Options.Create(width, height, minesCount);
 
@@ -36,11 +36,11 @@ namespace Minesweeper.Game
 		/// <summary>
 		/// Opens a cell manually
 		/// </summary>
-		public Task<OpenResultDto> OpenAsync(int row, int column)
+		public Task<OpenResult> OpenAsync(int row, int column)
 		{
 			var result = _currentGame.OpenCell(row, column);
-			var list = result.Item2?.Select(x => new CellDto(x.Row, x.Column, x.Count, x.IsMined));
-			return Task.FromResult(new OpenResultDto(result.Item1, list));
+			var list = result.OpennedCells?.Select(x => new Public.CellResult(x.Row, x.Column, x.Count, x.IsMined));
+			return Task.FromResult(new OpenResult(result.State, list));
 		}
 
 		/// <summary>

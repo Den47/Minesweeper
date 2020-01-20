@@ -1,12 +1,11 @@
 ﻿using Minesweeper.Game;
-using Minesweeper.Game.DTO;
+using Minesweeper.Game.Public;
 using Minesweeper.Settings;
 using Minesweeper.UI.Support;
 using Minesweeper.UI.ViewModels.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -210,7 +209,7 @@ namespace Minesweeper.UI.ViewModels
 			});
 		}
 
-		private void GameProcess_MinesUpdated(CellDto cell)
+		private void GameProcess_MinesUpdated(CellResult cell)
 		{
 			var item = _tiles.FirstOrDefault(x => x.Column == cell.Column && x.Row == cell.Row);
 			if (item == null)
@@ -301,7 +300,7 @@ namespace Minesweeper.UI.ViewModels
 
 		private async void OpenTile(CellViewModel tile)
 		{
-			OpenResultDto response;
+			OpenResult response;
 
 			if (_gameState == GameState.Ready)
 				response = await _gameProcess.StartAsync(FieldWidth, FieldHeight, MinesCount, tile.Row, tile.Column);

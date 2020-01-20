@@ -48,7 +48,7 @@ namespace Minesweeper.Game.Internal
 			return notOpen == hasMine;
 		}
 
-		public IEnumerable<CellBase> GetMinedList()
+		public IEnumerable<Cell> GetMinedList()
 		{
 			for (int i = 0; i < Options.Height; i++)
 				for (int j = 0; j < Options.Width; j++)

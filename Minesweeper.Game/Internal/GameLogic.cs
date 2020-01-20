@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Minesweeper.Game.Public;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,10 +37,10 @@ namespace Minesweeper.Game.Internal
 			cell.IsMarked = !cell.IsMarked;
 		}
 
-		public (GameState, IEnumerable<CellBase>) OpenCell(int row, int column)
+		public OpenResult OpenCell(int row, int column)
 		{
 			var result = Open(row, column);
-			State = result.Item1;
+			State = result.State;
 			return result;
 		}
 
@@ -51,19 +52,19 @@ namespace Minesweeper.Game.Internal
 				((Cell)cells).IsChecked = false;
 		}
 
-		private (GameState, IEnumerable<CellBase>) Open(int row, int column)
+		private OpenResult Open(int row, int column)
 		{
 			var cell = _field[row, column];
 
 			if (cell.IsMarked)
-				return (GameState.Playing, null);
+				return new OpenResult(GameState.Playing, null);
 
 			if (cell.IsMined)
-				return (GameState.Failed, _field.GetMinedList());
+				return new OpenResult(GameState.Failed, _field.GetMinedList().Select(x => Convert(x)));
 
 			ResetChecking();
 
-			var listOpenned = new List<CellBase>();
+			var listOpenned = new List<CellResult>();
 
 			if (cell.IsOpen)
 			{
@@ -76,29 +77,29 @@ namespace Minesweeper.Game.Internal
 				cell.IsOpen = true;
 				cell.IsChecked = true;
 
-				listOpenned.Add(cell.Copy());
+				listOpenned.Add(Convert(cell));
 
 				if (IsCompleted())
-					return (GameState.Success, listOpenned);
+					return new OpenResult(GameState.Success, listOpenned);
 
 				if (cell.Count == 0)
 					return Open(cell.Neighbors, listOpenned);
 			}
 
-			return (GameState.Playing, listOpenned);
+			return new OpenResult(GameState.Playing, listOpenned);
 		}
 
-		private (GameState, IEnumerable<CellBase>) Open(IEnumerable<Cell> cells, List<CellBase> listOpenned)
+		private OpenResult Open(IEnumerable<Cell> cells, List<CellResult> listOpenned)
 		{
 			foreach (var cell in cells)
 			{
 				if (cell.IsChecked || cell.IsMarked)
 					continue;
 
-				listOpenned.Add(cell.Copy());
+				listOpenned.Add(Convert(cell));
 
 				if (cell.IsMined)
-					return (GameState.Failed, _field.GetMinedList());
+					return new OpenResult(GameState.Failed, _field.GetMinedList().Select(x => Convert(x)));
 
 				cell.IsOpen = true;
 				cell.IsChecked = true;
@@ -107,7 +108,9 @@ namespace Minesweeper.Game.Internal
 					Open(cell.Neighbors, listOpenned);
 			}
 
-			return IsCompleted() ? (GameState.Success, listOpenned) : (GameState.Playing, listOpenned);
+			return IsCompleted()
+				? new OpenResult(GameState.Success, listOpenned)
+				: new OpenResult(GameState.Playing, listOpenned);
 		}
 
 		private static void GenerateField(Field field)
@@ -140,7 +143,7 @@ namespace Minesweeper.Game.Internal
 			}
 		}
 
-		private static void GenerateMines(Field field, Address address)
+		private static void GenerateMines(Field field, Address except)
 		{
 			var count = 0;
 
@@ -149,7 +152,7 @@ namespace Minesweeper.Game.Internal
 				var i = _random.Next(field.Options.Height);
 				var j = _random.Next(field.Options.Width);
 
-				if (address.Row == i && address.Column == j)
+				if (except.Row == i && except.Column == j)
 					continue;
 
 				if (field[i, j].IsMined)
@@ -162,6 +165,11 @@ namespace Minesweeper.Game.Internal
 					count++;
 				}
 			}
+		}
+
+		private static CellResult Convert(Cell cell)
+		{
+			return new CellResult(cell.Row, cell.Column, cell.Count, cell.IsMined);
 		}
 	}
 }
